@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body } from "@nestjs/common";
 import { providers } from "ethers";
 
 import { BlockRequest } from "src/models/BlockRequest";
