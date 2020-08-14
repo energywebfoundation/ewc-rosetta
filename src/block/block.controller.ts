@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body } from "@nestjs/common";
 import { providers } from "ethers";
 
-import { BlockRequest } from "src/models/BlockRequest";
-import { getRPCProvider } from "src/utils/client";
-import { Block } from "src/models/Block";
-import { PartialBlockIdentifier } from "src/models/PartialBlockIdentifier";
-import { Transaction } from "src/models/Transaction";
-import { TransactionIdentifier } from "src/models/TransactionIdentifer";
-import { Operation } from "src/models/Operation";
+import { BlockRequest } from "../models/BlockRequest";
+import { getRPCProvider } from "../utils/client";
+import { Block } from "../models/Block";
+import { PartialBlockIdentifier } from "../models/PartialBlockIdentifier";
+import { Transaction } from "../models/Transaction";
+import { TransactionIdentifier } from "../models/TransactionIdentifer";
+import { Operation } from "../models/Operation";
 
 @Controller("block")
 export class BlockController {
