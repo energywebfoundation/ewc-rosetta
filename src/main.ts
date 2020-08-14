@@ -8,7 +8,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('ewc-rosetta')
     .setDescription('Energy Web Chain Rosetta API description')
-    .setVersion(process.env.API_SEPC_VERVION)
+    .setVersion(process.env.API_SPEC_VERSION)
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
