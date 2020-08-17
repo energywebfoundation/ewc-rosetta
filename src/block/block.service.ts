@@ -15,54 +15,69 @@ export class BlockService {
 
   public async getBlock(blockNumber: number) {
     const provider = getRPCProvider();
-    const block = await provider.getBlockWithTransactions(blockNumber);
-    const parent = await provider.getBlock(block.parentHash);
+    const {
+      transactions,
+      miner,
+      timestamp,
+      parentHash,
+      hash,
+    } = await provider.getBlockWithTransactions(blockNumber);
 
-    const transactions = block.transactions
-      .filter((tx) => !tx.value.isZero())
-      .reduce(
-        (map, tx) => map.set(tx.hash, tx),
-        new Map<string, providers.TransactionResponse>()
-      );
+    const parent = await provider.getBlock(parentHash);
 
     const receipts = await Promise.all(
-      Array.from(transactions.values()).map((tx) =>
-        provider.getTransactionReceipt(tx.hash)
-      )
+      transactions.map((tx) => provider.getTransactionReceipt(tx.hash))
     );
 
     const operationFactory = new OperationFactory();
 
-    const blockTransaction = receipts.map((tx) => {
-      const { value, gasPrice } = transactions.get(tx.transactionHash);
-      const { gasUsed, status, from, to } = tx;
-      const feeValue = gasPrice.mul(gasUsed);
-      const success = status === 1;
-
-      const transfer = !value.isZero()
-        ? operationFactory.transferEWT(from, to, value, success)
-        : [];
-      const fee = operationFactory.fee(from, block.miner, feeValue);
-
-      return new Transaction(new TransactionIdentifier(tx.transactionHash), [
-        ...transfer,
-        ...fee,
-      ]);
-    });
+    const blockTransaction = await this.buildBlockTransactions(
+      miner,
+      receipts,
+      transactions,
+      operationFactory
+    );
 
     const rewardTransaction = await this.getRewardTransaction(
       blockNumber,
-      block.miner,
+      miner,
       operationFactory
     );
 
     return {
       block: new Block(
-        new PartialBlockIdentifier(block.number, block.hash),
+        new PartialBlockIdentifier(blockNumber, hash),
         new PartialBlockIdentifier(parent.number, parent.hash),
-        block.timestamp,
+        timestamp,
         [...blockTransaction, rewardTransaction]
       ),
+    };
+  }
+
+  public async getBlockTransaction(
+    blockNumber: number,
+    transactionHash: string
+  ) {
+    const provider = getRPCProvider();
+
+    const transaction = await provider.getTransaction(transactionHash);
+
+    if (transaction.blockNumber !== blockNumber) {
+      throw new Error("Blocknumber mismatch");
+    }
+
+    const receipt = await transaction.wait();
+    const block = await provider.getBlock(blockNumber);
+
+    const blockTransaction = await this.buildBlockTransactions(
+      block.miner,
+      [receipt],
+      [transaction],
+      new OperationFactory()
+    );
+
+    return {
+      transaction: blockTransaction,
     };
   }
 
@@ -80,5 +95,36 @@ export class BlockService {
       null,
       operationFactory.reward(minerReward.address, minerReward.value)
     );
+  }
+
+  private async buildBlockTransactions(
+    miner: string,
+    receipts: providers.TransactionReceipt[],
+    transactions: providers.TransactionResponse[],
+    operationFactory: OperationFactory
+  ) {
+    const transactionCache = transactions
+      .filter((tx) => !tx.value.isZero())
+      .reduce(
+        (map, tx) => map.set(tx.hash, tx),
+        new Map<string, providers.TransactionResponse>()
+      );
+
+    return receipts.map((tx) => {
+      const { value, gasPrice } = transactionCache.get(tx.transactionHash);
+      const { gasUsed, status, from, to } = tx;
+      const feeValue = gasPrice.mul(gasUsed);
+      const success = status === 1;
+
+      const transfer = !value.isZero()
+        ? operationFactory.transferEWT(from, to, value, success)
+        : [];
+      const fee = operationFactory.fee(from, miner, feeValue);
+
+      return new Transaction(new TransactionIdentifier(tx.transactionHash), [
+        ...transfer,
+        ...fee,
+      ]);
+    });
   }
 }
