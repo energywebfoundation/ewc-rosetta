@@ -1,5 +1,5 @@
 import { OperationIdentifier } from "./OperationIdentifier";
-import { Account } from "./Accounts";
+import { Account } from "./Account";
 import { Amount } from "./Amount";
 import { Currency } from "./Currency";
 import { BigNumber } from "ethers";
