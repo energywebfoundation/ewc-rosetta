@@ -1,13 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { getRPCProvider } from "src/utils/client";
 
 @Injectable()
 export class RewardService {
+  private communityFundReward = BigNumber.from("600900558100000000");
+  private communityFundAddressStorageLocation = 11;
+
   private rewardContractABI = [
     "function payoutAddresses(address _miner) view returns(address _payout)",
     "function mintedInBlock(uint256 _block) view returns(uint256 _reward)",
     "function mintedForAccountInBlock(address _payout, uint256 _block) view returns(uint256 _reward)",
+    "function communityFund() view returns(address _reward)",
   ];
 
   public async calculateBlockRewards(miner: string, blockNumber: number) {
@@ -19,6 +23,14 @@ export class RewardService {
       provider
     );
 
+    const communityFundAddress = ethers.utils.hexStripZeros(
+      await provider.getStorageAt(
+        rewardContract.address,
+        this.communityFundAddressStorageLocation,
+        blockNumber
+      )
+    );
+
     const payoutAddress = await rewardContract.payoutAddresses(miner);
 
     const rewardAddress = payoutAddress != 0 ? payoutAddress : miner;
@@ -28,6 +40,9 @@ export class RewardService {
       blockNumber
     );
 
-    return { address: rewardAddress, value: minerReward };
+    return [
+      { address: rewardAddress, value: minerReward },
+      { address: communityFundAddress, value: this.communityFundReward },
+    ];
   }
 }

@@ -87,14 +87,16 @@ export class BlockService {
     miner: string,
     operationFactory: OperationFactory
   ) {
-    const minerReward = await this.rewardService.calculateBlockRewards(
+    const blockRewards = await this.rewardService.calculateBlockRewards(
       miner,
       blockNumber
     );
 
     return new Transaction(
       null,
-      operationFactory.reward(minerReward.address, minerReward.value)
+      blockRewards.flatMap(({ address, value }) =>
+        operationFactory.reward(address, value)
+      )
     );
   }
 
