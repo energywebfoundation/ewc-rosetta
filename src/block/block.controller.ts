@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, HttpException } from "@nestjs/common";
 import { BlockRequest } from "src/models/BlockRequest";
 
 import { BlockService } from "./block.service";
@@ -10,7 +10,13 @@ export class BlockController {
 
   @Post()
   public async getBlock(@Body() body: BlockRequest) {
-    return this.blockService.getBlock(body.block_identifier.index);
+    const validationResult = await BlockRequest.validate(body);
+
+    if (validationResult) {
+      throw new HttpException(validationResult, 500);
+    }
+
+    return this.blockService.getBlock(body.block_identifier?.index);
   }
 
   @Post("transaction")

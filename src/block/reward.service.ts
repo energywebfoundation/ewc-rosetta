@@ -21,11 +21,13 @@ export class RewardService {
 
     const payoutAddress = await rewardContract.payoutAddresses(miner);
 
+    const rewardAddress = payoutAddress != 0 ? payoutAddress : miner;
+
     const minerReward = await rewardContract.mintedForAccountInBlock(
-      payoutAddress,
+      rewardAddress,
       blockNumber
     );
 
-    return { address: payoutAddress, value: minerReward };
+    return { address: rewardAddress, value: minerReward };
   }
 }

@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { getRPCProvider } from "src/utils/client";
 import { providers } from "ethers";
-import { Operation } from "src/models/Operation";
+import { Block } from "src/models/Block";
 import { OperationFactory } from "src/models/OperationFactory";
+import { PartialBlockIdentifier } from "src/models/PartialBlockIdentifier";
 import { Transaction } from "src/models/Transaction";
 import { TransactionIdentifier } from "src/models/TransactionIdentifer";
+import { getRPCProvider } from "src/utils/client";
+
 import { RewardService } from "./reward.service";
-import { Block } from "src/models/Block";
-import { PartialBlockIdentifier } from "src/models/PartialBlockIdentifier";
 
 @Injectable()
 export class BlockService {
   constructor(private rewardService: RewardService) {}
 
-  public async getBlock(blockNumber: number) {
+  public async getBlock(block?: number) {
     const provider = getRPCProvider();
     const {
       transactions,
@@ -21,7 +21,8 @@ export class BlockService {
       timestamp,
       parentHash,
       hash,
-    } = await provider.getBlockWithTransactions(blockNumber);
+      number: blockNumber,
+    } = await provider.getBlockWithTransactions(block || "latest");
 
     const parent = await provider.getBlock(parentHash);
 
