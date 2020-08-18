@@ -1,8 +1,8 @@
-import { Body, Controller, Post, HttpException } from "@nestjs/common";
-import { BlockRequest } from "src/models/BlockRequest";
+import { Body, Controller, HttpException, Post } from "@nestjs/common";
 
+import { BlockRequest } from "../models/BlockRequest";
+import { BlockTransactionRequest } from "../models/BlockTransactionRequest";
 import { BlockService } from "./block.service";
-import { BlockTransactionRequest } from "src/models/BlockTransactionRequest";
 
 @Controller("block")
 export class BlockController {
