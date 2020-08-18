@@ -24,4 +24,21 @@ describe("ConstructionService", () => {
 
     expect(derivedAddress).toBe(address);
   });
+
+  it("should return hash or signed transaction", async () => {
+    const wallet = ethers.Wallet.createRandom();
+
+    const transaction = await wallet.signTransaction({
+      to: wallet.address,
+      value: 0,
+      gasPrice: 10000,
+      gasLimit: 21000,
+    });
+
+    const { hash } = ethers.utils.parseTransaction(transaction);
+
+    const transactionHash = service.hash(transaction);
+
+    expect(transactionHash).toBe(hash);
+  });
 });
