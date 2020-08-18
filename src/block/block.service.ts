@@ -35,8 +35,6 @@ export class BlockService {
       operationFactory
     );
 
-    console.log(blockTransaction);
-
     const rewardTransaction = await this.getRewardTransaction(
       blockNumber,
       miner,

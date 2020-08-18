@@ -19,12 +19,19 @@ export class OperationFactory {
     success: boolean
   ) {
     return [
-      this.Transfer(
+      Operation.Transfer(
+        this.operationIndex++,
         from,
         new Amount(value.mul(-1).toString(), Currency.EWT),
         success
       ),
-      this.Transfer(to, new Amount(value.toString(), Currency.EWT), success),
+      Operation.Transfer(
+        this.operationIndex++,
+        to,
+        new Amount(value.toString(), Currency.EWT),
+        success,
+        [new OperationIdentifier(this.operationIndex - 2)]
+      ),
     ];
   }
 
@@ -42,17 +49,16 @@ export class OperationFactory {
         "Fee",
         "Success",
         new Account(miner),
-        new Amount(value.toString(), Currency.EWT)
+        new Amount(value.toString(), Currency.EWT),
+        [new OperationIdentifier(this.operationIndex - 2)]
       ),
     ];
   }
 
   public reward(address: string, value: BigNumber) {
-    const operation = this.operationIndex++;
-
     return [
       new Operation(
-        new OperationIdentifier(operation),
+        new OperationIdentifier(this.operationIndex++),
         "Reward",
         "Success",
         new Account(process.env.REWARD_CONTRACT_ADDRESS)
@@ -63,7 +69,7 @@ export class OperationFactory {
         "Success",
         new Account(address),
         new Amount(value.toString(), Currency.EWT),
-        [new OperationIdentifier(operation)]
+        [new OperationIdentifier(this.operationIndex - 2)]
       ),
     ];
   }

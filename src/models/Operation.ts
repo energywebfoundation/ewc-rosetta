@@ -16,14 +16,16 @@ export class Operation {
     index: number,
     address: string,
     amount: Amount,
-    success: boolean
+    success: boolean,
+    relatedOperations?: OperationIdentifier[]
   ) {
     return new Operation(
       new OperationIdentifier(index),
       "Transfer",
       success ? "Success" : "Reverted",
       new Account(address),
-      amount
+      amount,
+      relatedOperations
     );
   }
 }
