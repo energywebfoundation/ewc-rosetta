@@ -11,10 +11,11 @@ import { RewardService } from "./reward.service";
 
 @Injectable()
 export class BlockService {
+  private provider = getRPCProvider();
+
   constructor(private rewardService: RewardService) {}
 
   public async getBlock(block?: number) {
-    const provider = getRPCProvider();
     const {
       transactions,
       miner,
@@ -22,22 +23,19 @@ export class BlockService {
       parentHash,
       hash,
       number: blockNumber,
-    } = await provider.getBlockWithTransactions(block || "latest");
+    } = await this.provider.getBlockWithTransactions(block || "latest");
 
-    const parent = await provider.getBlock(parentHash);
-
-    const receipts = await Promise.all(
-      transactions.map((tx) => provider.getTransactionReceipt(tx.hash))
-    );
+    const parent = await this.provider.getBlock(parentHash);
 
     const operationFactory = new OperationFactory();
 
     const blockTransaction = await this.buildBlockTransactions(
       miner,
-      receipts,
       transactions,
       operationFactory
     );
+
+    console.log(blockTransaction);
 
     const rewardTransaction = await this.getRewardTransaction(
       blockNumber,
@@ -67,12 +65,10 @@ export class BlockService {
       throw new Error("Blocknumber mismatch");
     }
 
-    const receipt = await transaction.wait();
     const block = await provider.getBlock(blockNumber);
 
     const blockTransaction = await this.buildBlockTransactions(
       block.miner,
-      [receipt],
       [transaction],
       new OperationFactory()
     );
@@ -102,16 +98,17 @@ export class BlockService {
 
   private async buildBlockTransactions(
     miner: string,
-    receipts: providers.TransactionReceipt[],
     transactions: providers.TransactionResponse[],
     operationFactory: OperationFactory
   ) {
-    const transactionCache = transactions
-      .filter((tx) => !tx.value.isZero())
-      .reduce(
-        (map, tx) => map.set(tx.hash, tx),
-        new Map<string, providers.TransactionResponse>()
-      );
+    const receipts = await Promise.all(
+      transactions.map((tx) => this.provider.getTransactionReceipt(tx.hash))
+    );
+
+    const transactionCache = transactions.reduce(
+      (map, tx) => map.set(tx.hash, tx),
+      new Map<string, providers.TransactionResponse>()
+    );
 
     return receipts.map((tx) => {
       const { value, gasPrice } = transactionCache.get(tx.transactionHash);
@@ -119,9 +116,7 @@ export class BlockService {
       const feeValue = gasPrice.mul(gasUsed);
       const success = status === 1;
 
-      const transfer = !value.isZero()
-        ? operationFactory.transferEWT(from, to, value, success)
-        : [];
+      const transfer = operationFactory.transferEWT(from, to, value, success);
       const fee = operationFactory.fee(from, miner, feeValue);
 
       return new Transaction(new TransactionIdentifier(tx.transactionHash), [

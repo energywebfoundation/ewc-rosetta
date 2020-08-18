@@ -11,7 +11,6 @@ export class RewardService {
     "function payoutAddresses(address _miner) view returns(address _payout)",
     "function mintedInBlock(uint256 _block) view returns(uint256 _reward)",
     "function mintedForAccountInBlock(address _payout, uint256 _block) view returns(uint256 _reward)",
-    "function communityFund() view returns(address _reward)",
   ];
 
   public async calculateBlockRewards(miner: string, blockNumber: number) {
