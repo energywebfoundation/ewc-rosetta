@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { getRPCProvider } from "../utils/client";
 import { Currency } from "../models/Currency";
+import { utils } from "ethers";
 import { PartialBlockIdentifier } from "../models/PartialBlockIdentifier";
-import { Amount } from "../models/Amount";
 
 @Injectable()
 export class AccountService {
@@ -26,7 +26,7 @@ export class AccountService {
       await provider.getBalance(
         account).then(balance => {          
           balances.push({
-            value: new Amount(balance.mul(-1).toString(), Currency.EWT),
+            value: utils.formatEther(balance),
             currency: Currency.EWT,
             metadata: {}
           }) 
