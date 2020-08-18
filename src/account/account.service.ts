@@ -18,8 +18,8 @@ export class AccountService {
            
     } else {    
       // latest balance loookup
-      const block_number = await provider.getBlockNumber()      
-      await provider.getBlock(block_number).then(block => {
+      const blockNumber = await provider.getBlockNumber()      
+      await provider.getBlock(blockNumber).then(block => {
         blockIdentifier.index = block.number
         blockIdentifier.hash = block.hash          
       })
@@ -34,7 +34,7 @@ export class AccountService {
     }
 
     return {
-      block_identifier: blockIdentifier,
+      block: blockIdentifier,
       balances: balances,
       coins: {},
       metadata: {},
