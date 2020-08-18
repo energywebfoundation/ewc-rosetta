@@ -3,7 +3,7 @@ import { Amount } from "./Amount";
 import { BigNumber } from "ethers";
 import { Currency } from "./Currency";
 import { OperationIdentifier } from "./OperationIdentifier";
-import { Account } from "./Accounts";
+import { Account } from "./Account";
 
 export class OperationFactory {
   private operationIndex = 0;
