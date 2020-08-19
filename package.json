@@ -24,6 +24,7 @@
     "@nestjs/core": "^6.10.14",
     "@nestjs/platform-express": "^6.10.14",
     "@nestjs/swagger": "^4.5.12",
+    "dotenv": "8.2.0",
     "ethers": "5.0.8",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
@@ -65,5 +66,8 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "engines": {
+     "node": "12"
   }
 }

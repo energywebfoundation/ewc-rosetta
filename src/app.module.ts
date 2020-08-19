@@ -1,12 +1,8 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { BlockController } from './block/block.controller';
-import { NetworkController } from "./network/network.controller";
+import { Module } from "@nestjs/common";
+import { BlockModule } from "./block/block.module";
+import { AccountModule } from "./account/account.module";
 
 @Module({
-  imports: [],
-  controllers: [AppController, BlockController, NetworkController],
-  providers: [AppService],
+  imports: [BlockModule, AccountModule],
 })
 export class AppModule {}
