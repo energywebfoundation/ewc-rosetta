@@ -9,6 +9,10 @@ export class PartialBlockIdentifier {
       const provider = getRPCProvider();
       const block = await provider.getBlock(blockIdentifier.index);
 
+      if (!block) {        
+        return Errors.BLOCK_NOT_FOUND;  
+      }
+
       if (block.hash !== blockIdentifier.hash) {
         return Errors.BLOCK_HASH_MISMATCH;
       }
