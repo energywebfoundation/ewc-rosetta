@@ -1,4 +1,4 @@
-import { Account } from "./Accounts";
+import { Account } from "./Account";
 import { Amount } from "./Amount";
 import { OperationIdentifier } from "./OperationIdentifier";
 
