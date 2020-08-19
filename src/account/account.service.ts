@@ -26,8 +26,7 @@ export class AccountService {
       const balance = await provider.getBalance(accountAddress, blockIdentifier.index)      
       balances.push({
         value: utils.formatEther(balance),
-        currency: Currency.EWT,
-        metadata: {}
+        currency: Currency.EWT        
       })
 
     } else {    
@@ -41,18 +40,15 @@ export class AccountService {
       const balance = await provider.getBalance(accountAddress)                
       balances.push({
         value: utils.formatEther(balance),
-        currency: Currency.EWT,
-        metadata: {}
+        currency: Currency.EWT        
       })
 
     }
 
     return {
-      block: blockIdentifier,
-      balances: balances,
-      coins: {},
-      metadata: {},
-    };
+      "block_identifier": blockIdentifier,
+      "balances": balances      
+    }
   }
 
 }
