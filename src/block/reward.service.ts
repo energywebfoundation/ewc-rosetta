@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { ethers, BigNumber } from "ethers";
-import { getRPCProvider } from "src/utils/client";
+import { BigNumber, ethers } from "ethers";
+
+import { getRPCProvider } from "../utils/client";
 
 @Injectable()
 export class RewardService {

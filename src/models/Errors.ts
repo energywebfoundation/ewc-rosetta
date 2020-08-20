@@ -89,6 +89,11 @@ export const Errors = {
     message: "Query not supported",
     retriable: false,
   },
+  CURVE_NOT_SUPPORTED: {
+    code: 19,
+    message: "Curve not supported",
+    retriable: false,
+  },
   UNKNOWN_ERROR: {
     code: 32,
     message: "Unknown error.",
