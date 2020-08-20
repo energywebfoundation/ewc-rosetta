@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { ethers, BigNumber } from "ethers";
-import { Operation } from "../models/Operation";
-import { getRPCProvider } from "../utils/client";
-import { OperationFactory } from "../models/OperationFactory";
-import { sign } from "crypto";
+import { BigNumber, ethers } from "ethers";
+
 import { Amount } from "../models/Amount";
 import { Currency } from "../models/Currency";
-import { Errors } from "../models/Errors";
+import { Operation } from "../models/Operation";
+import { OperationFactory } from "../models/OperationFactory";
+import { getRPCProvider } from "../utils/client";
 
 @Injectable()
 export class ConstructionService {

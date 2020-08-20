@@ -1,6 +1,5 @@
 import { NetworkIdentifier } from "./NetworkIdentifier";
 import { Operation } from "./Operation";
-import { Errors } from "./Errors";
 
 export class ConstructionPreprocessRequest {
   constructor(

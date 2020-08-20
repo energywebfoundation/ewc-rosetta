@@ -27,18 +27,14 @@ export class BlockService {
 
     const parent = await this.provider.getBlock(parentHash);
 
-    const operationFactory = new OperationFactory();
-
     const blockTransaction = await this.buildBlockTransactions(
       miner,
-      transactions,
-      operationFactory
+      transactions
     );
 
     const rewardTransaction = await this.getRewardTransaction(
       blockNumber,
-      miner,
-      operationFactory
+      miner
     );
 
     return {
@@ -65,26 +61,22 @@ export class BlockService {
 
     const block = await provider.getBlock(blockNumber);
 
-    const blockTransaction = await this.buildBlockTransactions(
-      block.miner,
-      [transaction],
-      new OperationFactory()
-    );
+    const blockTransaction = await this.buildBlockTransactions(block.miner, [
+      transaction,
+    ]);
 
     return {
       transaction: blockTransaction,
     };
   }
 
-  private async getRewardTransaction(
-    blockNumber: number,
-    miner: string,
-    operationFactory: OperationFactory
-  ) {
+  private async getRewardTransaction(blockNumber: number, miner: string) {
     const blockRewards = await this.rewardService.calculateBlockRewards(
       miner,
       blockNumber
     );
+
+    const operationFactory = new OperationFactory();
 
     return new Transaction(
       null,
@@ -96,8 +88,7 @@ export class BlockService {
 
   private async buildBlockTransactions(
     miner: string,
-    transactions: providers.TransactionResponse[],
-    operationFactory: OperationFactory
+    transactions: providers.TransactionResponse[]
   ) {
     const receipts = await Promise.all(
       transactions.map((tx) => this.provider.getTransactionReceipt(tx.hash))
@@ -109,6 +100,7 @@ export class BlockService {
     );
 
     return receipts.map((tx) => {
+      const operationFactory = new OperationFactory();
       const { value, gasPrice } = transactionCache.get(tx.transactionHash);
       const { gasUsed, status, from, to } = tx;
       const feeValue = gasPrice.mul(gasUsed);

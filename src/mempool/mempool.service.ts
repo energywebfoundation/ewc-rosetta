@@ -31,7 +31,7 @@ export class MempoolService {
 
   public async getAllTransactions() {    
   
-    let transactionIdentifiers: TransactionIdentifier[] = [];
+    const transactionIdentifiers: TransactionIdentifier[] = [];
 
     [ ...this.transactionCache.keys() ].forEach(tx => {
       transactionIdentifiers.push(new TransactionIdentifier(tx))
