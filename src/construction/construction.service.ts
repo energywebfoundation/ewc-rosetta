@@ -6,13 +6,14 @@ import { Currency } from "../models/Currency";
 import { Operation } from "../models/Operation";
 import { OperationFactory } from "../models/OperationFactory";
 import { getRPCProvider } from "../utils/client";
+import { addZXPrefix } from "../utils/hex";
 
 @Injectable()
 export class ConstructionService {
   private provider = getRPCProvider();
 
   public derive(bytes: string) {
-    return ethers.utils.computeAddress(bytes);
+    return ethers.utils.computeAddress(addZXPrefix(bytes));
   }
 
   public hash(signedTransaction: string) {
@@ -56,12 +57,7 @@ export class ConstructionService {
     } else {
       return {
         operations: [
-          Operation.Transfer(
-            0,
-            to,
-            new Amount(value.toString(), Currency.EWT),
-            true
-          ),
+          Operation.Transfer(0, to, new Amount(value.toString(), Currency.EWT)),
         ],
         signer: null,
       };

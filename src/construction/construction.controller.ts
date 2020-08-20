@@ -18,6 +18,7 @@ import { ConstructionParseRequest } from "../models/ConstructionParseRequest";
 import { ConstructionSubmitRequest } from "../models/ConstructionSubmitRequest";
 import { Errors } from "../models/Errors";
 import { ConstructionCombineRequest } from "../models/ConstructionCombineRequest";
+import { stripZXPrefix } from "../utils/hex";
 
 @Controller("construction")
 export class ConstructionController {
@@ -103,7 +104,7 @@ export class ConstructionController {
       payloads: [
         {
           address,
-          hex_bytes: transaction,
+          hex_bytes: stripZXPrefix(transaction),
           signature_type: SignatureType.Ecdsa,
         },
       ],
