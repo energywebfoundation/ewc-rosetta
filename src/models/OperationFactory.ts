@@ -16,7 +16,7 @@ export class OperationFactory {
     from: string,
     to: string,
     value: BigNumber,
-    success: boolean
+    success?: boolean
   ) {
     return [
       Operation.Transfer(

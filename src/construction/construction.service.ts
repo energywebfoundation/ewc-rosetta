@@ -1,8 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { BigNumber, ethers } from "ethers";
 
-import { Amount } from "../models/Amount";
-import { Currency } from "../models/Currency";
 import { Operation } from "../models/Operation";
 import { OperationFactory } from "../models/OperationFactory";
 import { getRPCProvider } from "../utils/client";
@@ -11,6 +9,8 @@ import { addZXPrefix } from "../utils/hex";
 @Injectable()
 export class ConstructionService {
   private provider = getRPCProvider();
+
+  private signers = new Map<string, string>();
 
   public derive(bytes: string) {
     return ethers.utils.computeAddress(addZXPrefix(bytes));
@@ -40,6 +40,10 @@ export class ConstructionService {
       chainId: (await this.provider.getNetwork()).chainId,
     });
 
+    // workaround the fact that unsigned transaction does not provider from field
+    // which is then required in the parse function in order to recover the from operation
+    this.signers.set(transaction, sender);
+
     return {
       transaction,
       address: sender,
@@ -49,19 +53,13 @@ export class ConstructionService {
   public async parse(transaction: string, signed: boolean) {
     const { from, to, value } = ethers.utils.parseTransaction(transaction);
 
-    if (signed) {
-      return {
-        operations: new OperationFactory().transferEWT(from, to, value, true),
-        signer: from,
-      };
-    } else {
-      return {
-        operations: [
-          Operation.Transfer(0, to, new Amount(value.toString(), Currency.EWT)),
-        ],
-        signer: null,
-      };
-    }
+    // workaround
+    const sender = this.signers.get(transaction);
+
+    return {
+      operations: new OperationFactory().transferEWT(from ?? sender, to, value),
+      signer: from,
+    };
   }
 
   public async submit(signedTransaction: string) {
@@ -75,6 +73,13 @@ export class ConstructionService {
     const parsedTransaction = ethers.utils.parseTransaction(
       unsignedTransaction
     );
+
+    // for some reason when running from nest:start
+    // v,r,s are set to 0x0 values instead undefined
+    // which is causing serializeTransaction not taking the real signature
+    delete parsedTransaction.v;
+    delete parsedTransaction.r;
+    delete parsedTransaction.s;
 
     return ethers.utils.serializeTransaction(parsedTransaction, signature);
   }
