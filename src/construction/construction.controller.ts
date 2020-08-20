@@ -1,4 +1,10 @@
-import { Body, Controller, HttpException, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpException,
+  Post,
+  HttpCode,
+} from "@nestjs/common";
 import { ConstructionDeriveRequest } from "../models/ConstructionDeriveRequest";
 
 import { ConstructionService } from "./construction.service";
@@ -18,6 +24,7 @@ export class ConstructionController {
   constructor(private constructionService: ConstructionService) {}
 
   @Post("/derive")
+  @HttpCode(200)
   public async derive(@Body() request: ConstructionDeriveRequest) {
     const validationResult = ConstructionDeriveRequest.validate(request);
 
@@ -35,6 +42,7 @@ export class ConstructionController {
   }
 
   @Post("/hash")
+  @HttpCode(200)
   public async hash(@Body() request: ConstructionHashRequest) {
     const validationResult = ConstructionHashRequest.validate(request);
 
@@ -50,6 +58,7 @@ export class ConstructionController {
   }
 
   @Post("/preprocess")
+  @HttpCode(200)
   public async preprocess(@Body() request: ConstructionPreprocessRequest) {
     const validationResult = ConstructionPreprocessRequest.validate(request);
 
@@ -63,6 +72,7 @@ export class ConstructionController {
   }
 
   @Post("/metadata")
+  @HttpCode(200)
   public async metadata(@Body() request: ConstructionMetadataRequest) {
     const validationResult = ConstructionMetadataRequest.validate(request);
 
@@ -76,6 +86,7 @@ export class ConstructionController {
   }
 
   @Post("/payloads")
+  @HttpCode(200)
   public async payloads(@Body() request: ConstructionPayloadsRequest) {
     const validationResult = ConstructionPayloadsRequest.validate(request);
 
@@ -100,6 +111,7 @@ export class ConstructionController {
   }
 
   @Post("/parse")
+  @HttpCode(200)
   public async parse(@Body() request: ConstructionParseRequest) {
     const validationResult = ConstructionParseRequest.validate(request);
 
@@ -111,6 +123,7 @@ export class ConstructionController {
   }
 
   @Post("/submit")
+  @HttpCode(200)
   public async submit(@Body() request: ConstructionSubmitRequest) {
     const validationResult = ConstructionSubmitRequest.validate(request);
 
@@ -132,6 +145,7 @@ export class ConstructionController {
   }
 
   @Post("/combine")
+  @HttpCode(200)
   public async combine(@Body() request: ConstructionCombineRequest) {
     const signedTransaction = await this.constructionService.combine(
       request.unsigned_transaction,
