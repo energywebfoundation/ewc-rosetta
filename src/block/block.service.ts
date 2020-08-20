@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { providers } from "ethers";
-import { Block } from "src/models/Block";
-import { OperationFactory } from "src/models/OperationFactory";
-import { PartialBlockIdentifier } from "src/models/PartialBlockIdentifier";
-import { Transaction } from "src/models/Transaction";
-import { TransactionIdentifier } from "src/models/TransactionIdentifer";
-import { getRPCProvider } from "src/utils/client";
 
+import { Block } from "../models/Block";
+import { OperationFactory } from "../models/OperationFactory";
+import { PartialBlockIdentifier } from "../models/PartialBlockIdentifier";
+import { Transaction } from "../models/Transaction";
+import { TransactionIdentifier } from "../models/TransactionIdentifer";
+import { getRPCProvider } from "../utils/client";
 import { RewardService } from "./reward.service";
 
 @Injectable()
