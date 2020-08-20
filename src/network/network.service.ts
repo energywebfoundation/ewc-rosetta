@@ -11,63 +11,57 @@ import { BlockIdentifier } from "../models/BlockIdentifier";
 export class NetworkService {
   private provider = getRPCProvider();
 
-  public networkIdentifiers: NetworkIdentifier[]
-  public networkOptions: NetworkOptionsResponse
+  public networkIdentifiers = [new NetworkIdentifier("ewc", "246")];
+  public networkOptions: NetworkOptionsResponse;
 
   constructor() {
-    this.networkIdentifiers = [
-      new NetworkIdentifier(
-        'volta', '73799'
-      ),
-      new NetworkIdentifier(
-        'ewc', '246'
-      )
-    ]
-    const errors: Err[] = []
-    for(const [k, v] of Object.entries(Errors)) {
-      errors.push(v)
+    const errors: Err[] = [];
+    for (const [, v] of Object.entries(Errors)) {
+      errors.push(v);
     }
 
     this.networkOptions = {
-      "version": {
-        "rosetta_version": "1.2.5",
-        "node_version": "1.0.2",
-        "middleware_version": "0.2.7",
-        "metadata": {}
+      version: {
+        rosetta_version: "1.4.2",
+        node_version: "1.0.2",
       },
-      "allow": {
-        "operation_statuses": [
+      allow: {
+        operation_statuses: [
           {
-            "status": "SUCCESS",
-            "successful": true
-          }
+            status: "Success",
+            successful: true,
+          },
+          {
+            status: "Reverted",
+            successful: false,
+          },
         ],
-        "operation_types": [
-          "TRANSFER"
-        ],
-        "errors": errors,
-        "historical_balance_lookup": true
-      }
-    }
+        operation_types: ["Transfer", "Fee", "Reward"],
+        errors: errors,
+        historical_balance_lookup: true,
+      },
+    };
   }
 
   public findNetwork(identifier) {
-    return this.networkIdentifiers
-      .find(ni =>
-        ni.blockchain === identifier.blockchain && ni.network === identifier.network
-      )
+    return this.networkIdentifiers.find(
+      (ni) =>
+        ni.blockchain === identifier.blockchain &&
+        ni.network === identifier.network
+    );
   }
 
-  public async getNetworkStatus(network: NetworkIdentifier) : Promise<NetworkStatusResponse>{
-    const currentBlock = await this.provider.getBlock("latest")
-    const genesisBlock = await this.provider.getBlock(0)
+  public async getNetworkStatus(
+    network: NetworkIdentifier
+  ): Promise<NetworkStatusResponse> {
+    const currentBlock = await this.provider.getBlock("latest");
+    const genesisBlock = await this.provider.getBlock(0);
     const networkStatus = new NetworkStatusResponse(
       new BlockIdentifier(currentBlock.number, currentBlock.hash),
       currentBlock.timestamp,
       new BlockIdentifier(genesisBlock.number, genesisBlock.hash),
       [] // getting peers seems to be a functionality of Web3 2.0 https://web3js.readthedocs.io/en/v2.0.0-alpha.1/web3-eth-admin.html#getpeers and is not available in ethers
-    )
-    return networkStatus
+    );
+    return networkStatus;
   }
-
 }
