@@ -1,4 +1,1 @@
-export class MetadataRequest {
-  constructor() {
-  }
-}
+export class MetadataRequest {}

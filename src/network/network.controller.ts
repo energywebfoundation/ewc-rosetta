@@ -1,8 +1,12 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  Post,
+} from "@nestjs/common";
 
-import { Errors } from "../models/Errors";
 import { MetadataRequest } from "../models/MetadataRequest";
-import { NetworkIdentifier } from "../models/NetworkIdentifier";
 import { NetworkListResponse } from "../models/NetworkListResponse";
 import { NetworkRequest } from "../models/NetworkRequest";
 import { NetworkService } from "./network.service";
@@ -12,32 +16,30 @@ export class NetworkController {
   constructor(private networkService: NetworkService) {}
 
   @Post("list")
+  @HttpCode(200)
   public async getList(@Body() body: MetadataRequest) {
     return new NetworkListResponse(this.networkService.networkIdentifiers);
   }
 
   @Post("options")
+  @HttpCode(200)
   public async getOptions(@Body() body: NetworkRequest) {
-    const network = this.networkService.findNetwork(body.network_identifier);
-    if (!network) {
-      return Errors.INVALID_NETWORK;
+    const validationResult = NetworkRequest.validate(body);
+    if (validationResult) {
+      throw new HttpException(validationResult, 500);
     }
 
-    return (
-      NetworkIdentifier.validate(network) || this.networkService.networkOptions
-    );
+    return this.networkService.networkOptions;
   }
 
   @Post("status")
+  @HttpCode(200)
   public async getStatus(@Body() body: NetworkRequest) {
-    const network = this.networkService.findNetwork(body.network_identifier);
-    if (!network) {
-      return Errors.INVALID_NETWORK;
+    const validationResult = NetworkRequest.validate(body);
+    if (validationResult) {
+      throw new HttpException(validationResult, 500);
     }
 
-    return (
-      NetworkIdentifier.validate(network) ||
-      this.networkService.getNetworkStatus(network)
-    );
+    return this.networkService.getNetworkStatus();
   }
 }

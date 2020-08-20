@@ -11,7 +11,9 @@ import { BlockIdentifier } from "../models/BlockIdentifier";
 export class NetworkService {
   private provider = getRPCProvider();
 
-  public networkIdentifiers = [new NetworkIdentifier("ewc", "246")];
+  public networkIdentifiers = [
+    new NetworkIdentifier(process.env.BLOCKCHAIN, process.env.NETWORK),
+  ];
   public networkOptions: NetworkOptionsResponse;
 
   constructor() {
@@ -51,14 +53,12 @@ export class NetworkService {
     );
   }
 
-  public async getNetworkStatus(
-    network: NetworkIdentifier
-  ): Promise<NetworkStatusResponse> {
+  public async getNetworkStatus(): Promise<NetworkStatusResponse> {
     const currentBlock = await this.provider.getBlock("latest");
     const genesisBlock = await this.provider.getBlock(0);
     const networkStatus = new NetworkStatusResponse(
       new BlockIdentifier(currentBlock.number, currentBlock.hash),
-      currentBlock.timestamp,
+      currentBlock.timestamp * 1000,
       new BlockIdentifier(genesisBlock.number, genesisBlock.hash),
       [] // getting peers seems to be a functionality of Web3 2.0 https://web3js.readthedocs.io/en/v2.0.0-alpha.1/web3-eth-admin.html#getpeers and is not available in ethers
     );
