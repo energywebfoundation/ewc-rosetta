@@ -95,9 +95,9 @@ describe("ConstructionService", () => {
 
     const result = await service.parse(transaction, false);
     expect(result).toBeDefined();
-    expect(result.signer).toBeNull();
+    expect(result.signer).toBeFalsy();
 
-    const [to] = result.operations;
+    const [, to] = result.operations;
 
     expect(to.account.address).toBe(receiver);
     expect(to.amount.value).toBe(value.toString());
