@@ -32,17 +32,17 @@ export class BlockService {
       transactions
     );
 
-    const rewardTransaction = await this.getRewardTransaction(
-      blockNumber,
-      miner
-    );
+    // const rewardTransaction = await this.getRewardTransaction(
+    //   blockNumber,
+    //   miner
+    // );
 
     return {
       block: new Block(
         new PartialBlockIdentifier(blockNumber, hash),
         new PartialBlockIdentifier(parent.number, parent.hash),
-        timestamp,
-        [...blockTransaction, rewardTransaction]
+        timestamp * 1000,
+        [...blockTransaction]
       ),
     };
   }
