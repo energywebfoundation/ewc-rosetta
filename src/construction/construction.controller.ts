@@ -4,6 +4,7 @@ import {
   HttpException,
   Post,
   HttpCode,
+  NotFoundException,
 } from "@nestjs/common";
 import { ConstructionDeriveRequest } from "../models/ConstructionDeriveRequest";
 
@@ -20,6 +21,7 @@ import { Errors } from "../models/Errors";
 import { ConstructionCombineRequest } from "../models/ConstructionCombineRequest";
 import { stripZXPrefix, addZXPrefix } from "../utils/hex";
 import { ethers } from "ethers";
+import { inOfflineMode } from "../utils/client";
 
 @Controller("construction")
 export class ConstructionController {
@@ -68,22 +70,34 @@ export class ConstructionController {
       throw new HttpException(validationResult, 500);
     }
 
+    const signer = this.constructionService.preprocess(request.operations);
+
     return {
-      options: {},
+      options: {
+        signer,
+      },
     };
   }
 
   @Post("/metadata")
   @HttpCode(200)
   public async metadata(@Body() request: ConstructionMetadataRequest) {
+    if (inOfflineMode()) {
+      throw new NotFoundException();
+    }
+
     const validationResult = ConstructionMetadataRequest.validate(request);
 
     if (validationResult) {
       throw new HttpException(validationResult, 500);
     }
 
+    const metadata = await this.constructionService.metadata(
+      request.options.signer
+    );
+
     return {
-      metadata: {},
+      metadata,
     };
   }
 
@@ -97,7 +111,8 @@ export class ConstructionController {
     }
 
     const { transaction, address } = await this.constructionService.payloads(
-      request.operations
+      request.operations,
+      request.metadata
     );
 
     return {
@@ -135,6 +150,10 @@ export class ConstructionController {
   @Post("/submit")
   @HttpCode(200)
   public async submit(@Body() request: ConstructionSubmitRequest) {
+    if (inOfflineMode()) {
+      throw new NotFoundException();
+    }
+
     const validationResult = ConstructionSubmitRequest.validate(request);
 
     if (validationResult) {
