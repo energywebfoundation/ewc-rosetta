@@ -1,4 +1,11 @@
-# EW Chain Rosetta
+<h1 align="center">
+  <br>
+  <a href="https://www.energyweb.org/"><img src="https://www.energyweb.org/wp-content/uploads/2019/04/logo-brand.png" alt="EnergyWeb" width="150"></a>
+  <br>
+  EnergyWeb Rosetta API
+  <br>
+  <br>
+</h1>
 A Rosetta implentation for the [Energy Web Chain](https://energyweb.org/)
 
 # Overview
@@ -12,6 +19,16 @@ The Energy Web Chain (EW Chain) Rosetta API implementation allows you to quickly
 
 # RPC endpoints
 
-# Build
+# Build / Run
 
-# Run
+Energyweb Rosetta API requires synchronized EWC (or Volta) node to be available via JSON-RPC endpoint 
+
+## Local
+
+Use template `.env.example.ewc` or `.env.example.volta` and rename it to `.env` 
+
+```
+yarn
+yarn build
+yarn start
+```
