@@ -4,6 +4,8 @@ import { ethers, BigNumber } from "ethers";
 import { OperationFactory } from "../models/OperationFactory";
 
 const fundedAccount = ethers.Wallet.createRandom();
+const chainId = 1337;
+const gasPrice = ethers.utils.parseUnits("1", "gwei").toString();
 
 const ganache = require("ganache-core"); // eslint-disable-line @typescript-eslint/no-var-requires
 ganache
@@ -18,6 +20,7 @@ ganache
   .listen(8545);
 
 process.env.WEB3_PROVIDER_URL = "http://localhost:8545";
+process.env.MODE = "online";
 
 describe("ConstructionService", () => {
   let service: ConstructionService;
@@ -72,7 +75,11 @@ describe("ConstructionService", () => {
       true
     );
 
-    const payload = await service.payloads(transfer);
+    const payload = await service.payloads(transfer, {
+      chainId,
+      gasPrice,
+      nonce: 0,
+    });
 
     expect(payload).toBeDefined();
   });
@@ -91,7 +98,11 @@ describe("ConstructionService", () => {
       true
     );
 
-    const { transaction } = await service.payloads(transfer);
+    const { transaction } = await service.payloads(transfer, {
+      chainId,
+      gasPrice,
+      nonce: 0,
+    });
 
     const result = await service.parse(transaction, false);
     expect(result).toBeDefined();

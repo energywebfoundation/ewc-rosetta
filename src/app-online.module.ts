@@ -17,4 +17,4 @@ import { HTTPLoggingInterceptor } from "./HTTPLoggingInterceptor";
   ],
   providers: [{ provide: APP_INTERCEPTOR, useClass: HTTPLoggingInterceptor }],
 })
-export class AppModule {}
+export class AppOnlineModule {}

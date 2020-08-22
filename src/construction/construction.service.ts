@@ -5,6 +5,7 @@ import { Operation } from "../models/Operation";
 import { OperationFactory } from "../models/OperationFactory";
 import { getRPCProvider } from "../utils/client";
 import { addZXPrefix } from "../utils/hex";
+import { TransactionMetadata } from "../models/TransactionMetadata";
 
 @Injectable()
 export class ConstructionService {
@@ -22,22 +23,25 @@ export class ConstructionService {
     return transaction.hash;
   }
 
-  public async payloads(operations: Operation[]) {
-    const [from, to] = operations.sort(
-      (a, b) => a.operation_identifier.index - b.operation_identifier.index
-    );
+  public async payloads(
+    operations: Operation[],
+    metadata: TransactionMetadata
+  ) {
+    const { from, to } = this.parseOperations(operations);
 
     const sender = from.account.address;
     const receiver = to.account.address;
     const value = BigNumber.from(to.amount.value);
 
+    const { nonce, gasPrice, chainId } = metadata;
+
     const transaction = ethers.utils.serializeTransaction({
       to: receiver,
-      nonce: await this.provider.getTransactionCount(sender),
+      nonce,
       gasLimit: 21000,
-      gasPrice: await this.provider.getGasPrice(),
+      gasPrice: BigNumber.from(gasPrice),
       value,
-      chainId: (await this.provider.getNetwork()).chainId,
+      chainId,
     });
 
     // workaround the fact that unsigned transaction does not provider from field
@@ -82,5 +86,27 @@ export class ConstructionService {
     delete parsedTransaction.s;
 
     return ethers.utils.serializeTransaction(parsedTransaction, signature);
+  }
+
+  public preprocess(operations: Operation[]) {
+    const { from } = this.parseOperations(operations);
+
+    return from.account.address;
+  }
+
+  public async metadata(signer: string) {
+    const nonce = await this.provider.getTransactionCount(signer);
+    const gasPrice = (await this.provider.getGasPrice()).toString();
+    const chainId = (await this.provider.getNetwork()).chainId;
+
+    return new TransactionMetadata(nonce, gasPrice, chainId);
+  }
+
+  private parseOperations(operations: Operation[]) {
+    const [from, to] = operations.sort(
+      (a, b) => a.operation_identifier.index - b.operation_identifier.index
+    );
+
+    return { from, to };
   }
 }
