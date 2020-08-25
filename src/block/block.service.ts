@@ -116,11 +116,16 @@ export class BlockService {
     return receipts.map((tx) => {
       const operationFactory = new OperationFactory();
       const { value, gasPrice } = transactionCache.get(tx.transactionHash);
-      const { gasUsed, status, from, to } = tx;
+      const { gasUsed, status, from, to, contractAddress } = tx;
       const feeValue = gasPrice.mul(gasUsed);
       const success = status === 1;
 
-      const transfer = operationFactory.transferEWT(from, to, value, success);
+      const transfer = operationFactory.transferEWT(
+        from,
+        to ?? contractAddress,
+        value,
+        success
+      );
       const fee = operationFactory.fee(from, miner, feeValue);
 
       return new Transaction(new TransactionIdentifier(tx.transactionHash), [
