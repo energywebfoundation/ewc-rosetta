@@ -37,8 +37,8 @@ export class HTTPLoggingInterceptor implements NestInterceptor {
         const delay = Date.now() - now;
         this.logger.error(
           `${response.statusCode} | [${method}] ${url} - ${JSON.stringify(
-            error.message
-          )} - ${delay}ms`
+            body
+          )} ${JSON.stringify(error.message)} - ${delay}ms`
         );
         return throwError(error);
       })
