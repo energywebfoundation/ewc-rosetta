@@ -6,6 +6,7 @@ import { getRPCProvider } from "../utils/client";
 @Injectable()
 export class RewardService {
   private communityFundReward = BigNumber.from("600900558100000000");
+  private communityFundAddress = "0x1204700000000000000000000000000000000003";
   private communityFundAddressStorageLocation = 11;
 
   private rewardContractABI = [
@@ -23,13 +24,13 @@ export class RewardService {
       provider
     );
 
-    const communityFundAddress = ethers.utils.hexStripZeros(
-      await provider.getStorageAt(
-        rewardContract.address,
-        this.communityFundAddressStorageLocation,
-        blockNumber
-      )
-    );
+    // const communityFundAddress = ethers.utils.hexStripZeros(
+    //   await provider.getStorageAt(
+    //     rewardContract.address,
+    //     this.communityFundAddressStorageLocation,
+    //     blockNumber
+    //   )
+    // );
 
     const payoutAddress = await rewardContract.payoutAddresses(miner);
 
@@ -42,7 +43,7 @@ export class RewardService {
 
     return [
       { address: rewardAddress, value: minerReward },
-      { address: communityFundAddress, value: this.communityFundReward },
+      { address: this.communityFundAddress, value: this.communityFundReward },
     ];
   }
 }

@@ -29,6 +29,12 @@ export class BlockController {
   @Post("transaction")
   @HttpCode(200)
   public async getTransaction(@Body() body: BlockTransactionRequest) {
+    const validationResult = await BlockTransactionRequest.validate(body);
+
+    if (validationResult) {
+      throw new HttpException(validationResult, 500);
+    }
+
     return this.blockService.getBlockTransaction(
       body.block_identifier.index,
       body.transaction_identifier.hash

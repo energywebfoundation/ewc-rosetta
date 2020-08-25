@@ -32,17 +32,18 @@ export class BlockService {
       transactions
     );
 
-    // const rewardTransaction = await this.getRewardTransaction(
-    //   blockNumber,
-    //   miner
-    // );
+    const rewardTransaction = await this.getRewardTransaction(
+      blockNumber,
+      hash,
+      miner
+    );
 
     return {
       block: new Block(
         new PartialBlockIdentifier(blockNumber, hash),
         new PartialBlockIdentifier(parent.number, parent.hash),
         timestamp * 1000,
-        [...blockTransaction]
+        [...blockTransaction, rewardTransaction]
       ),
     };
   }
@@ -51,26 +52,39 @@ export class BlockService {
     blockNumber: number,
     transactionHash: string
   ) {
-    const provider = getRPCProvider();
+    const transaction = await this.provider.getTransaction(transactionHash);
+    if (transaction) {
+      if (transaction.blockNumber !== blockNumber) {
+        throw new Error("Blocknumber mismatch");
+      }
 
-    const transaction = await provider.getTransaction(transactionHash);
+      const block = await this.provider.getBlock(blockNumber);
 
-    if (transaction.blockNumber !== blockNumber) {
-      throw new Error("Blocknumber mismatch");
+      const blockTransaction = await this.buildBlockTransactions(block.miner, [
+        transaction,
+      ]);
+
+      return {
+        transaction: blockTransaction,
+      };
     }
 
-    const block = await provider.getBlock(blockNumber);
-
-    const blockTransaction = await this.buildBlockTransactions(block.miner, [
-      transaction,
-    ]);
+    const block = await this.provider.getBlock(transactionHash);
 
     return {
-      transaction: blockTransaction,
+      transaction: await this.getRewardTransaction(
+        block.number,
+        block.hash,
+        block.miner
+      ),
     };
   }
 
-  private async getRewardTransaction(blockNumber: number, miner: string) {
+  private async getRewardTransaction(
+    blockNumber: number,
+    blockHash: string,
+    miner: string
+  ) {
     const blockRewards = await this.rewardService.calculateBlockRewards(
       miner,
       blockNumber
@@ -79,7 +93,7 @@ export class BlockService {
     const operationFactory = new OperationFactory();
 
     return new Transaction(
-      null,
+      new TransactionIdentifier(blockHash),
       blockRewards.flatMap(({ address, value }) =>
         operationFactory.reward(address, value)
       )
