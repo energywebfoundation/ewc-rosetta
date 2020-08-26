@@ -6,6 +6,13 @@
   "data_directory": "volta-data",
   "http_timeout": 300,
   "tip_delay": 60,
+  "data": {
+    "historical_balance_disabled": true,    
+    "balance_tracking_disabled": true,
+    "end_conditions": {
+      "tip": true
+    }
+  },
   "construction": {
     "currency": {
       "symbol": "EWT",
