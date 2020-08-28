@@ -11,3 +11,9 @@ RUN git clone --branch v2.5.13 --depth 1 https://github.com/openethereum/openeth
 WORKDIR /openethereum
 
 RUN . ~/.cargo/env && cargo build --release --features final && strip target/release/parity
+
+FROM ubuntu:latest
+
+COPY --from=builder /openethereum/target/release/parity bin/openethereum
+
+CMD [ "openethereum", "--chain", "Volta" ]
