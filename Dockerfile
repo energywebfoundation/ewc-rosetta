@@ -1,15 +1,13 @@
-FROM rust:1.45.2-slim-buster as builder
+FROM ubuntu:18.04 as builder
 
-RUN apt update && apt install -y git make cmake file binutils openssl libudev-dev yasm g++
+RUN apt update && apt install -y build-essential curl git make cmake file binutils openssl libudev-dev yasm g++
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+RUN . ~/.cargo/env && rustup toolchain install 1.40.0
+
+RUN git clone --branch v2.5.13-fix --depth 1 https://github.com/energywebfoundation/openethereum
 
 WORKDIR /openethereum
 
-# don't loose state between builds
-VOLUME /openethereum
-
-RUN git clone --branch v2.5.13 --depth 1 https://github.com/openethereum/openethereum .
-
-RUN cargo build --release --features final && strip target/release/openethereum && file target/release/openethereum
-
-# keep the container running for debugging
-CMD sleep infinity
+RUN . ~/.cargo/env && cargo build --release --features final && strip target/release/parity && file target/release/parity
