@@ -3,52 +3,26 @@
     "blockchain": "ewc",
     "network": "volta"
   },
-  "data_directory": "volta-data",
-  "http_timeout": 300,
-  "tip_delay": 60,
+  "online_url": "http://localhost:8080",
+  "data_directory": "./volta-data",
+  "http_timeout": 10,
+  "tip_delay": 300,
+  "data": {
+    "historical_balance_enabled": false,
+    "reconciliation_disabled": true,
+    "inactive_discrepency_search_disabled": true,
+    "balance_tracking_disabled": true,
+    "end_conditions": {
+      "tip": true
+    }
+  },
   "construction": {
-    "currency": {
-      "symbol": "EWT",
-      "decimals": 18
-    },
-    "minimum_balance": "0",
-    "maximum_fee": "5000000000000000",
-    "curve_type": "secp256k1",
-    "accounting_model": "account",
-    "scenario": [
-      {
-        "operation_identifier": {
-          "index": 0
-        },
-        "type": "Transfer",
-        "status": "",
-        "account": {
-          "address": "{{ SENDER }}"
-        },
-        "amount": {
-          "value": "{{ SENDER_VALUE }}",
-          "currency": null
-        }
-      },
-      {
-        "operation_identifier": {
-          "index": 1
-        },
-        "related_operations": [
-          {
-            "index": 0
-          }
-        ],
-        "type": "Transfer",
-        "status": "",
-        "account": {
-          "address": "{{ RECIPIENT }}"
-        },
-        "amount": {
-          "value": "{{ RECIPIENT_VALUE }}",
-          "currency": null
-        }
-      }
-    ]
+    "stale_depth": 3,
+    "broadcast_limit": 5,
+    "constructor_dsl_file": "volta.ros",
+    "end_conditions": {
+      "create_account": 10,
+      "transfer": 20
+    }
   }
 }
