@@ -1,0 +1,27 @@
+{
+  "network": {
+    "blockchain": "ewc",
+    "network": "mainnet"
+  },
+  "data_directory": "ewc-data",
+  "http_timeout": 300,
+  "tip_delay": 60,
+  "data": {
+    "historical_balance_enabled": true,
+    "reconciliation_disabled": false,
+    "inactive_discrepency_search_disabled": true,
+    "balance_tracking_disabled": false,
+    "end_conditions": {
+      "tip": true
+    }
+  },
+  "construction": {
+    "stale_depth": 3,
+    "broadcast_limit": 5,
+    "constructor_dsl_file": "mainnet.ros",
+    "end_conditions": {
+      "create_account": 10,
+      "transfer": 6
+    }
+  }
+}
