@@ -33,3 +33,34 @@ yarn
 yarn build
 yarn start
 ```
+
+## rosetta-cli validation
+
+1. Volta
+
+.env configuration
+
+```shell
+BLOCKCHAIN=ewc
+NETWORK=volta
+WEB3_PROVIDER_URL=<volta web3 node>
+```
+
+```shell
+rosetta-cli check:data --configuration-file volta.json
+rosetta-cli check:construction --configuration-file volta.json
+```
+2. EWC
+
+.env configuration
+
+```shell
+BLOCKCHAIN=ewc
+NETWORK=mainnet
+WEB3_PROVIDER_URL=<mainnet web3 node>
+```
+
+```shell
+rosetta-cli check:data --configuration-file mainnet.json
+rosetta-cli check:construction --configuration-file mainnet.json
+```
