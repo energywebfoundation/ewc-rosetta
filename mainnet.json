@@ -8,7 +8,7 @@
   "tip_delay": 60,
   "data": {
     "historical_balance_enabled": true,
-    "reconciliation_disabled": false,
+    "reconciliation_disabled": true,
     "inactive_discrepency_search_disabled": true,
     "balance_tracking_disabled": false,
     "end_conditions": {
