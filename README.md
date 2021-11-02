@@ -22,7 +22,7 @@ The Energy Web Chain (EW Chain) Rosetta API implementation allows you to quickly
 
 # Build / Run
 
-Energyweb Rosetta API requires synchronized EWC (or Volta) node to be available via JSON-RPC endpoint 
+Energyweb Rosetta API requires synchronized EWC (or Volta) archive node with tracing module enabled
 
 ## Local
 
@@ -43,7 +43,7 @@ yarn start
 ```shell
 BLOCKCHAIN=ewc
 NETWORK=volta
-WEB3_PROVIDER_URL=<volta web3 node>
+WEB3_PROVIDER_URL=<volta web3 archive node with tracing>
 ```
 
 ```shell
@@ -57,7 +57,7 @@ rosetta-cli check:construction --configuration-file volta.json
 ```shell
 BLOCKCHAIN=ewc
 NETWORK=mainnet
-WEB3_PROVIDER_URL=<mainnet web3 node>
+WEB3_PROVIDER_URL=<mainnet web3 archive node with tracing>
 ```
 
 ```shell
