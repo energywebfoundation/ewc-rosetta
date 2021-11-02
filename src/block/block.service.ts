@@ -1,5 +1,5 @@
-import {Injectable} from "@nestjs/common";
-import {providers} from "ethers";
+import {Injectable, Logger} from "@nestjs/common";
+import {providers, BigNumber, utils} from "ethers";
 
 import {Block} from "../models/Block";
 import {OperationFactory} from "../models/OperationFactory";
@@ -9,10 +9,12 @@ import {TransactionIdentifier} from "../models/TransactionIdentifer";
 import {getRPCProvider} from "../utils/client";
 import {RewardService} from "./reward.service";
 import {withRetry} from "../utils/withRetry";
+import {Operation} from "../models/Operation";
 
 @Injectable()
 export class BlockService {
     private provider = getRPCProvider();
+    private readonly logger = new Logger(BlockService.name);
 
     constructor(private rewardService: RewardService) {
     }
@@ -115,25 +117,67 @@ export class BlockService {
             new Map<string, providers.TransactionResponse>()
         );
 
-        return receipts.map((tx) => {
-            const operationFactory = new OperationFactory();
-            const {value, gasPrice} = transactionCache.get(tx.transactionHash);
-            const {gasUsed, status, from, to, contractAddress} = tx;
-            const feeValue = gasPrice.mul(gasUsed);
-            const success = status === 1;
+        return Promise.all(receipts.map(async (tx) => {
+                const operationFactory = new OperationFactory();
+                const {value, gasPrice, data} = transactionCache.get(tx.transactionHash);
+                const {gasUsed, status, from, to, contractAddress} = tx;
+                const feeValue = gasPrice.mul(gasUsed);
+                const success = status === 1;
 
-            const transfer = operationFactory.transferEWT(
-                from,
-                to ?? contractAddress,
-                value,
-                success
+                let transfers = [];
+
+                if (data != '0x') {
+                    try {
+                        const trace = await withRetry(() => this.provider.send('trace_transaction', [tx.transactionHash]));
+                        transfers = this.traceToTransfers(trace, operationFactory);
+                    } catch (e) {
+                        this.logger.error(`Parsing trace output for tx ${tx.transactionHash} failed with error ${e.toString()}`);
+                    }
+                } else {
+                    transfers = operationFactory.transferEWT(
+                        from,
+                        to ?? contractAddress,
+                        value,
+                        success
+                    );
+                }
+
+                const fee = operationFactory.fee(from, miner, feeValue);
+
+                return new Transaction(new TransactionIdentifier(tx.transactionHash), [
+                    ...transfers,
+                    ...fee,
+                ]);
+            }
+        ))
+    }
+
+    private traceToTransfers(trace: any, operationFactory: OperationFactory): Operation[] {
+        const internalTransfers = trace.filter(t => !t.error && (t.action.value != '0x0' || t.type === 'suicide'));
+
+        return internalTransfers.map(tx => {
+            let from, value, to;
+
+            if (tx.type === "create") {
+                from = tx.action.from;
+                to = tx.result.address;
+                value = tx.action.value;
+            } else if (tx.type == "suicide") {
+                from = tx.action.address;
+                to = tx.action.refundAddress;
+                value = tx.action.balance;
+            } else {
+                from = tx.action.from;
+                to = tx.action.to;
+                value = tx.action.value;
+            }
+
+            return operationFactory.transferEWT(
+                utils.getAddress(from),
+                utils.getAddress(to),
+                BigNumber.from(value),
+                true
             );
-            const fee = operationFactory.fee(from, miner, feeValue);
-
-            return new Transaction(new TransactionIdentifier(tx.transactionHash), [
-                ...transfer,
-                ...fee,
-            ]);
-        });
+        }).flat()
     }
 }
