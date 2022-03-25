@@ -17,7 +17,7 @@ request_funds(1){
     loaded_account = find_balance({
       "account_identifier": {{random_account.account_identifier}},
       "minimum_balance":{
-        "value": "10000000000000000",
+        "value": "1000000000000000",
         "currency": {{currency}}
       }
     });
@@ -47,7 +47,7 @@ transfer(3){
     currency = {"symbol":"EWT", "decimals":18};
     sender = find_balance({
       "minimum_balance":{
-        "value": "1000000000000000",
+        "value": "100000000000000",
         "currency": {{currency}}
       }
     });
@@ -112,7 +112,7 @@ return_funds(3){
     sender_amount = 0 - {{available_amount}};
 
     // Provide a static address as the recipient and construct operations
-    faucet = {"address":"0xA4f3aeDcBE557Cc864C2d36e65D15668e9d59cA2"};
+    faucet = {"address":"0x160aCA5Db87b19b7104E2Bd2b0495C35336255D7"};
     transfer.confirmation_depth = "1";
     transfer.operations = [
       {
