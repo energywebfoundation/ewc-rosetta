@@ -24,7 +24,7 @@
     "offline_url": "http://localhost:8080",	  
     "stale_depth": 3,
     "broadcast_limit": 5,
-    "constructor_dsl_file": "mainnet.ros",
+    "constructor_dsl_file": "volta.ros",
     "prefunded_accounts":[
     {
         "privkey":"",
