@@ -7,17 +7,16 @@
   "data_directory": "ewc-data",
   "http_timeout": 300,
   "tip_delay": 300,
-  "data": { 
+  "max_retries": 15,
+  "force_retry": true,
+  "data": {
+    "ignore_reconciliation_error": true,
     "historical_balance_enabled": true,
     "reconciliation_disabled": false,
     "inactive_discrepancy_search_disabled": false,
     "balance_tracking_disabled": false,
     "end_conditions": {
-    "tip": true,
-    "reconciliation_coverage": {
-        "coverage": 0.95,
-        "tip": true
-        }
+      "index": 17000000
     }
   },
   "construction": {
