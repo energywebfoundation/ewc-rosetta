@@ -1,28 +1,57 @@
 {
   "network": {
-    "blockchain": "ewc",
-    "network": "volta"
+    "blockchain":"ewc",
+    "network":"volta"
   },
-  "online_url": "http://localhost:8080",
-  "data_directory": "./volta-data",
-  "http_timeout": 10,
+  "online_url":"http://localhost:8080",
+  "data_directory": "volta-data",
+  "http_timeout": 30,
+  "max_retries": 15,
   "tip_delay": 300,
+  "force_retry": true,
   "data": {
-    "historical_balance_enabled": false,
-    "reconciliation_disabled": true,
-    "inactive_discrepency_search_disabled": true,
-    "balance_tracking_disabled": true,
+    "start_index": 1,
+    "ignore_reconciliation_error": true,
+    "historical_balance_enabled": true,
+    "reconciliation_disabled": false,
+    "inactive_discrepancy_search_disabled": false,
+    "balance_tracking_disabled": false,
     "end_conditions": {
-      "tip": true
+      "index": 16000000
     }
   },
   "construction": {
+    "offline_url": "http://localhost:8080",	  
     "stale_depth": 3,
     "broadcast_limit": 5,
     "constructor_dsl_file": "volta.ros",
+    "prefunded_accounts":[
+    {
+        "privkey":"",
+        "account_identifier":{
+            "address":"0x160aCA5Db87b19b7104E2Bd2b0495C35336255D7"
+            },
+        "curve_type":"secp256k1",
+        "currency":{
+            "symbol":"EWT",
+            "decimals":18
+        }
+    },
+    {
+        "privkey":"",
+        "account_identifier":{
+            "address":"0x472762508FA9745c53f20DfAd258764EDD635AC8"
+            },
+        "curve_type":"secp256k1",
+        "currency":{
+            "symbol":"EWT",
+            "decimals":18
+        }
+    }
+    ],
     "end_conditions": {
       "create_account": 10,
-      "transfer": 20
+      "transfer": 6
     }
   }
 }
