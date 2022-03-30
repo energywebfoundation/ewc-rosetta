@@ -6,18 +6,18 @@
   "online_url":"http://localhost:8080",
   "data_directory": "volta-data",
   "http_timeout": 30,
+  "max_retries": 15,
   "tip_delay": 300,
-  "data": { 
+  "force_retry": true,
+  "data": {
+    "start_index": 1,
+    "ignore_reconciliation_error": true,
     "historical_balance_enabled": true,
     "reconciliation_disabled": false,
     "inactive_discrepancy_search_disabled": false,
     "balance_tracking_disabled": false,
     "end_conditions": {
-    "tip": true,
-    "reconciliation_coverage": {
-        "coverage": 0.95,
-        "tip": true
-        }
+      "index": 16000000
     }
   },
   "construction": {
