@@ -4,7 +4,6 @@ import {
   HttpException,
   Post,
   HttpCode,
-  NotFoundException,
 } from "@nestjs/common";
 import { ConstructionDeriveRequest } from "../models/ConstructionDeriveRequest";
 
@@ -21,11 +20,11 @@ import { Errors } from "../models/Errors";
 import { ConstructionCombineRequest } from "../models/ConstructionCombineRequest";
 import { stripZXPrefix, addZXPrefix } from "../utils/hex";
 import { ethers } from "ethers";
-import { inOfflineMode } from "../utils/client";
+import { DynamicRoute } from "../shared/decorators/dynamic-route.decorator";
 
 @Controller("construction")
 export class ConstructionController {
-  constructor(private constructionService: ConstructionService) {}
+  constructor(private constructionService: ConstructionService) { }
 
   @Post("/derive")
   @HttpCode(200)
@@ -79,13 +78,11 @@ export class ConstructionController {
     };
   }
 
-  @Post("/metadata")
-  @HttpCode(200)
+  @DynamicRoute(
+    Post("/metadata"),
+    HttpCode(200)
+  )
   public async metadata(@Body() request: ConstructionMetadataRequest) {
-    if (inOfflineMode()) {
-      throw new NotFoundException();
-    }
-
     const validationResult = ConstructionMetadataRequest.validate(request);
 
     if (validationResult) {
@@ -147,13 +144,11 @@ export class ConstructionController {
     };
   }
 
-  @Post("/submit")
-  @HttpCode(200)
+  @DynamicRoute(
+    Post("/submit"),
+    HttpCode(200)
+  )
   public async submit(@Body() request: ConstructionSubmitRequest) {
-    if (inOfflineMode()) {
-      throw new NotFoundException();
-    }
-
     const validationResult = ConstructionSubmitRequest.validate(request);
 
     if (validationResult) {

@@ -3,9 +3,9 @@ import {
   Controller,
   HttpCode,
   HttpException,
-  Post,
+  Post
 } from "@nestjs/common";
-
+import { DynamicRoute } from "../shared/decorators/dynamic-route.decorator";
 import { MetadataRequest } from "../models/MetadataRequest";
 import { NetworkListResponse } from "../models/NetworkListResponse";
 import { NetworkRequest } from "../models/NetworkRequest";
@@ -13,7 +13,7 @@ import { NetworkService } from "./network.service";
 
 @Controller("network")
 export class NetworkController {
-  constructor(private networkService: NetworkService) {}
+  constructor(private networkService: NetworkService) { }
 
   @Post("list")
   @HttpCode(200)
@@ -32,8 +32,10 @@ export class NetworkController {
     return this.networkService.networkOptions;
   }
 
-  @Post("status")
-  @HttpCode(200)
+  @DynamicRoute(
+    Post("status"),
+    HttpCode(200)
+  )
   public async getStatus(@Body() body: NetworkRequest) {
     const validationResult = NetworkRequest.validate(body);
     if (validationResult) {

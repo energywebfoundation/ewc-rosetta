@@ -1,15 +1,15 @@
-import {Injectable, Logger} from "@nestjs/common";
-import {providers, BigNumber, utils} from "ethers";
+import { Injectable, Logger } from "@nestjs/common";
+import { providers, BigNumber, utils } from "ethers";
 
-import {Block} from "../models/Block";
-import {OperationFactory} from "../models/OperationFactory";
-import {PartialBlockIdentifier} from "../models/PartialBlockIdentifier";
-import {Transaction} from "../models/Transaction";
-import {TransactionIdentifier} from "../models/TransactionIdentifer";
-import {getRPCProvider} from "../utils/client";
-import {RewardService} from "./reward.service";
-import {withRetry} from "../utils/withRetry";
-import {Operation} from "../models/Operation";
+import { Block } from "../models/Block";
+import { OperationFactory } from "../models/OperationFactory";
+import { PartialBlockIdentifier } from "../models/PartialBlockIdentifier";
+import { Transaction } from "../models/Transaction";
+import { TransactionIdentifier } from "../models/TransactionIdentifer";
+import { getRPCProvider } from "../utils/client";
+import { RewardService } from "./reward.service";
+import { withRetry } from "../utils/withRetry";
+import { Operation } from "../models/Operation";
 
 @Injectable()
 export class BlockService {
@@ -27,9 +27,9 @@ export class BlockService {
             parentHash,
             hash,
             number: blockNumber,
-        } = await withRetry(() => this.provider.getBlockWithTransactions(block || "latest"));
+        } = await withRetry(() => this.provider.getBlockWithTransactions(block ?? 'latest'));
 
-        const parent = await withRetry(() => this.provider.getBlock(parentHash));
+        const parent = await withRetry(() => this.provider.getBlock(parentHash))
 
         const blockTransaction = await this.buildBlockTransactions(
             miner,
@@ -45,7 +45,7 @@ export class BlockService {
         return {
             block: new Block(
                 new PartialBlockIdentifier(blockNumber, hash),
-                new PartialBlockIdentifier(parent.number, parent.hash),
+                new PartialBlockIdentifier(parent?.number ?? blockNumber, parent?.hash ?? hash),
                 timestamp * 1000,
                 [...blockTransaction, rewardTransaction]
             ),
@@ -98,7 +98,7 @@ export class BlockService {
 
         return new Transaction(
             new TransactionIdentifier(blockHash),
-            blockRewards.flatMap(({address, value}) =>
+            blockRewards.flatMap(({ address, value }) =>
                 operationFactory.reward(address, value)
             )
         );
@@ -118,37 +118,37 @@ export class BlockService {
         );
 
         return Promise.all(receipts.map(async (tx) => {
-                const operationFactory = new OperationFactory();
-                const {value, gasPrice, data} = transactionCache.get(tx.transactionHash);
-                const {gasUsed, status, from, to, contractAddress} = tx;
-                const feeValue = gasPrice.mul(gasUsed);
-                const success = status === 1;
+            const operationFactory = new OperationFactory();
+            const { value, gasPrice, data } = transactionCache.get(tx.transactionHash);
+            const { gasUsed, status, from, to, contractAddress } = tx;
+            const feeValue = gasPrice.mul(gasUsed);
+            const success = status === 1;
 
-                let transfers = [];
+            let transfers = [];
 
-                if (data != '0x') {
-                    try {
-                        const trace = await withRetry(() => this.provider.send('trace_transaction', [tx.transactionHash]));
-                        transfers = this.traceToTransfers(trace, operationFactory);
-                    } catch (e) {
-                        this.logger.error(`Parsing trace output for tx ${tx.transactionHash} failed with error ${e.toString()}`);
-                    }
-                } else {
-                    transfers = operationFactory.transferEWT(
-                        from,
-                        to ?? contractAddress,
-                        value,
-                        success
-                    );
+            if (data != '0x') {
+                try {
+                    const trace = await withRetry(() => this.provider.send('trace_transaction', [tx.transactionHash]));
+                    transfers = this.traceToTransfers(trace, operationFactory);
+                } catch (e) {
+                    this.logger.error(`Parsing trace output for tx ${tx.transactionHash} failed with error ${e.toString()}`);
                 }
-
-                const fee = operationFactory.fee(from, miner, feeValue);
-
-                return new Transaction(new TransactionIdentifier(tx.transactionHash), [
-                    ...transfers,
-                    ...fee,
-                ]);
+            } else {
+                transfers = operationFactory.transferEWT(
+                    from,
+                    to ?? contractAddress,
+                    value,
+                    success
+                );
             }
+
+            const fee = operationFactory.fee(from, miner, feeValue);
+
+            return new Transaction(new TransactionIdentifier(tx.transactionHash), [
+                ...transfers,
+                ...fee,
+            ]);
+        }
         ))
     }
 
