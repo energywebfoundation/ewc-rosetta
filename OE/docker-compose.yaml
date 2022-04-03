@@ -1,0 +1,16 @@
+version: "3.2"
+
+services:  
+  openethereum:
+    image: oerosetta:1.0.1
+    container_name: openethereum
+    restart: always
+    # networks:
+    # dev:
+    command:
+      openethereum --config /parity/config/parity.toml
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+    volumes:
+      - /Users/kamilwitkowski/Coding/Personal/Apps/rosetta/new/ewc-rosetta/configOE:/parity/config:ro
