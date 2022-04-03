@@ -15,7 +15,7 @@ else
 fi
 
 if [ "$process" = "openethereum" ]; then
-    openethereum --config $CONFIG_PATH --mode $MODE
+    openethereum --config $CONFIG_PATH --mode $mode
 else
     node /bin/ewc-rosetta/dist/main.js
 fi
