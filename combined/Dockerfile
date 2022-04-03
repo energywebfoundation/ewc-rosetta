@@ -16,7 +16,7 @@ WORKDIR /openethereum
 RUN . ~/.cargo/env && cargo build --release --features final && strip target/release/openethereum
 
 WORKDIR ../
-RUN git clone https://github.com/energywebfoundation/ewc-rosetta.git
+RUN git clone --branch DOI-1852-single-dockerfile https://github.com/energywebfoundation/ewc-rosetta.git
 
 RUN npm i -g yarn
 
@@ -34,7 +34,7 @@ RUN mkdir /bin/ewc-rosetta
 COPY --from=builder ewc-rosetta/dist bin/ewc-rosetta/dist
 COPY --from=builder ewc-rosetta/node_modules bin/ewc-rosetta/node_modules
 
-ADD start.sh /
+COPY --from=builder ewc-rosetta/start.sh /
 RUN chmod +x /start.sh
 
 CMD ["/start.sh"]
