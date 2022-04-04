@@ -73,13 +73,16 @@ rosetta-cli check:construction --configuration-file mainnet.json
 docker build -t nodeapi:1.0.0 -f Dockerfile .
 ```
 
-2. Go to configs folder and run docker compose. By default both rosetta API and openethereum blockchain node will be configured for ewc (mainnet) in online mode using .env template and mainnet chainspec template. You can always modify it accordingly. 
+2. Go to configs and use template `.env.example.ewc` or `.env.example.volta` and rename it to `.env`. 
+3. Go to /configs/OE folder and use template `chainspec.json.ewc` or `chainspec.json.volta` and rename it to `chainspec.json`.
+
+4. Use docker-compose to run both rosetta API and blockchain node. 
 
 ```shell
 docker-compose up -d
 ```
 
-3. Validate whether openethereum node and rosetta api are working correctly
+5. Validate whether openethereum node and rosetta api are working correctly
 
 ```shell
 docker-compose logs openethereum
