@@ -2,7 +2,7 @@ version: "3.2"
 
 services:  
   openethereum:
-    image: combined:1.0.9
+    image: nodeapi:1.0.0
     container_name: openethereum
     restart: always
     env_file:
@@ -14,7 +14,7 @@ services:
     volumes:
       - ./OE:/parity/config:ro
   rosetta:
-    image: combined:1.0.9
+    image: nodeapi:1.0.0
     container_name: rosetta
     restart: always
     env_file:

@@ -16,7 +16,7 @@ WORKDIR /openethereum
 RUN . ~/.cargo/env && cargo build --release --features final && strip target/release/openethereum
 
 WORKDIR ../
-RUN git clone --branch DOI-1852-combined-dev-devops-upgrades https://github.com/energywebfoundation/ewc-rosetta.git
+RUN git clone https://github.com/energywebfoundation/ewc-rosetta.git
 
 RUN npm i -g yarn
 
