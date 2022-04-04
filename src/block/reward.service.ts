@@ -41,9 +41,14 @@ export class RewardService {
       blockNumber
     );
 
-    return [
-      { address: rewardAddress, value: minerReward },
-      { address: this.communityFundAddress, value: this.communityFundReward },
-    ];
+    const rewardTransactions = [{ address: rewardAddress, value: minerReward }]
+
+    /*
+    * Community found reward is added on 1 block, the genesis block balance for community found is 0 
+    */
+    if (blockNumber !== 0) {
+      rewardTransactions.push({ address: this.communityFundAddress, value: this.communityFundReward })
+    }
+    return rewardTransactions;
   }
 }
