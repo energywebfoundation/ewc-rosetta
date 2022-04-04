@@ -10,7 +10,6 @@
   "max_retries": 15,
   "force_retry": true,
   "data": {
-    "start_index": 1,
     "ignore_reconciliation_error": true,
     "historical_balance_enabled": true,
     "reconciliation_disabled": false,
