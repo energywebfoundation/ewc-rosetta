@@ -1,0 +1,26 @@
+version: "3.2"
+
+services:  
+  openethereum:
+    image: combined:1.0.8
+    container_name: openethereum
+    restart: always
+    env_file:
+      - .env
+    command:
+      /start.sh openethereum
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./OE:/parity/config:ro
+  rosetta:
+    image: combined:1.0.8
+    container_name: rosetta
+    restart: always
+    env_file:
+      - .env
+    command:
+      /start.sh rosetta
+    ports:
+      - "8080:8080"
+
