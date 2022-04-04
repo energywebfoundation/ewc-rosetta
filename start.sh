@@ -15,7 +15,7 @@ else
 fi
 
 if [ "$process" = "openethereum" ]; then
-    openethereum --config $CONFIG_PATH --mode $mode
+    openethereum --config /parity/config/parity.toml --mode $mode
 else
     node /bin/ewc-rosetta/dist/main.js
 fi
