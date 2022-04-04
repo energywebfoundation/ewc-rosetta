@@ -64,3 +64,24 @@ WEB3_PROVIDER_URL=<mainnet web3 archive node with tracing>
 rosetta-cli check:data --configuration-file mainnet.json
 rosetta-cli check:construction --configuration-file mainnet.json
 ```
+
+## Docker deployment example
+
+1. Build container using Dockerfile
+
+```shell
+docker build -t nodeapi:1.0.0 -f Dockerfile .
+```
+
+2. Go to configs folder and run docker compose. By default both rosetta API and openethereum blockchain node will be configured for ewc (mainnet) in online mode using .env template and mainnet chainspec template. You can always modify it accordingly. 
+
+```shell
+docker-compose up -d
+```
+
+3. Validate whether openethereum node and rosetta api are working correctly
+
+```shell
+docker-compose logs openethereum
+docker-compose logs rosetta
+```
