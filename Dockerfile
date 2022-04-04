@@ -1,30 +1,40 @@
-FROM ubuntu:latest as base
+FROM ubuntu:18.04 as base
 
-RUN apt-get update
-RUN apt-get -y install curl gnupg
+RUN apt update && apt install -y build-essential curl git cmake libudev-dev pkg-config file make perl yasm gnupg
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN curl -sL https://deb.nodesource.com/setup_14.x  | bash -
 RUN apt-get -y install nodejs
 
-FROM base AS builder
+#OE
 
-RUN apt-get -y install git
+FROM base as builder
+RUN git clone --branch v3.3.4 --depth 1 https://github.com/openethereum/openethereum
 
+WORKDIR /openethereum
+
+RUN . ~/.cargo/env && cargo build --release --features final && strip target/release/openethereum
+
+WORKDIR ../
 RUN git clone https://github.com/energywebfoundation/ewc-rosetta.git
 
 RUN npm i -g yarn
 
-WORKDIR ewc-rosetta
-
+WORKDIR /ewc-rosetta
 RUN yarn --silent
 RUN yarn build
 
 
 FROM base as release
 
-RUN mkdir /ewc-rosetta
-WORKDIR /ewc-rosetta
+COPY --from=builder /openethereum/target/release/openethereum bin/openethereum
 
-COPY --from=builder ewc-rosetta/dist dist
-COPY --from=builder ewc-rosetta/node_modules node_modules
+RUN mkdir /bin/ewc-rosetta
 
-CMD node dist/main.js
+COPY --from=builder ewc-rosetta/dist bin/ewc-rosetta/dist
+COPY --from=builder ewc-rosetta/node_modules bin/ewc-rosetta/node_modules
+
+COPY --from=builder ewc-rosetta/start.sh /
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

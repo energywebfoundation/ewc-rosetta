@@ -1,0 +1,41 @@
+[parity]
+chain = "/parity/config/chainspec.json"
+no_persistent_txqueue = true
+
+[rpc]
+disable = false
+port = 8545
+interface = "0.0.0.0"
+cors = ["all"]
+apis = ['eth', 'net', 'parity', 'web3', 'pubsub', 'traces', 'parity_pubsub']
+server_threads = 100
+
+[websockets]
+disable = false
+interface = "0.0.0.0"
+port = 8546
+
+[ipc]
+disable = true
+
+[secretstore]
+disable = true
+
+[network]
+port = 30303
+min_peers = 25
+max_peers = 50
+discovery = true
+warp = false
+allow_ips = "all"
+snapshot_peers = 0
+max_pending_peers = 64
+
+[footprint]
+db_compaction = "ssd"
+pruning = "archive"
+tracing = "on"
+fat_db = "on"
+
+[snapshots]
+enable = false

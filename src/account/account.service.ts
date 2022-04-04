@@ -1,8 +1,8 @@
-import {Injectable} from "@nestjs/common";
-import {getRPCProvider} from "../utils/client";
-import {Currency} from "../models/Currency";
-import {PartialBlockIdentifier} from "../models/PartialBlockIdentifier";
-import {withRetry} from "../utils/withRetry";
+import { Injectable } from "@nestjs/common";
+import { getRPCProvider } from "../utils/client";
+import { Currency } from "../models/Currency";
+import { PartialBlockIdentifier } from "../models/PartialBlockIdentifier";
+import { withRetry } from "../utils/withRetry";
 
 @Injectable()
 export class AccountService {
@@ -14,7 +14,7 @@ export class AccountService {
 
         return {
             "block_identifier": new PartialBlockIdentifier(block.number, block.hash),
-            "balances": [{value: balance.toString(), currency: Currency.EWT}]
+            "balances": [{ value: balance.toString(), currency: Currency.EWT }]
         }
     }
 }
