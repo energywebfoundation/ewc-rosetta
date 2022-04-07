@@ -1,5 +1,5 @@
 FROM ubuntu:18.04 as base
-
+ENV DEBIAN_FRONTEND=noninteractive 
 RUN apt update && apt install -y build-essential curl git cmake libudev-dev pkg-config file make perl yasm gnupg
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
