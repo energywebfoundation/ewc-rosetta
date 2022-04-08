@@ -1,5 +1,4 @@
 [parity]
-chain = "/parity/config/chainspec.json"
 no_persistent_txqueue = true
 
 [rpc]

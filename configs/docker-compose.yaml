@@ -11,8 +11,6 @@ services:
       /start.sh openethereum
     ports:
       - "8545:8545"
-    volumes:
-      - ./OE:/parity/config:ro
   rosetta:
     image: nodeapi:1.0.0
     container_name: rosetta
