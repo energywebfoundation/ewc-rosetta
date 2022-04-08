@@ -43,4 +43,7 @@ COPY --from=builder ewc-rosetta/node_modules bin/ewc-rosetta/node_modules
 COPY --from=builder ewc-rosetta/start.sh /
 RUN chmod +x /start.sh
 
+EXPOSE 8545
+EXPOSE 8080
+
 CMD ["/start.sh"]
