@@ -2,7 +2,7 @@ version: "3.2"
 
 services:  
   openethereum:
-    image: nodeapi:1.0.0
+    image: ewc-rosetta:1.0.0
     container_name: openethereum
     restart: always
     env_file:
@@ -12,7 +12,7 @@ services:
     ports:
       - "8545:8545"
   rosetta:
-    image: nodeapi:1.0.0
+    image: ewc-rosetta:1.0.0
     container_name: rosetta
     restart: always
     env_file:
