@@ -34,57 +34,34 @@ yarn build
 yarn start
 ```
 
-## rosetta-cli validation
-
-1. Volta
-
-.env configuration
-
-```shell
-BLOCKCHAIN=ewc
-NETWORK=volta
-WEB3_PROVIDER_URL=<volta web3 archive node with tracing>
-```
-
-```shell
-rosetta-cli check:data --configuration-file volta.json
-rosetta-cli check:construction --configuration-file volta.json
-```
-2. EWC
-
-.env configuration
-
-```shell
-BLOCKCHAIN=ewc
-NETWORK=mainnet
-WEB3_PROVIDER_URL=<mainnet web3 archive node with tracing>
-```
-
-```shell
-rosetta-cli check:data --configuration-file mainnet.json
-rosetta-cli check:construction --configuration-file mainnet.json
-```
-
 ## Docker deployment example
 
-1. Build container using Dockerfile
+### 1. Build container using Dockerfile
 
 ```shell
-docker build -t nodeapi:1.0.0 -f Dockerfile .
+docker build -t ewc-rosetta:latest .
 ```
+or within repository you can run `make build`
 
-2. Go to configs folder and use template `.env.example.ewc` or `.env.example.volta` and rename it to `.env`. 
-3. Go to /configs/OE folder and use template `chainspec.json.ewc` or `chainspec.json.volta` and rename it to `chainspec.json`.
-
-4. Use docker-compose to run both rosetta API and blockchain node. 
-
+### 2. Run container:
+#### MAINNET:ONLINE
 ```shell
-docker-compose up -d
+docker run -d --rm -e "MODE=online" -e "NETWORK=mainnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 -p 8545:8545 ewc-rosetta:latest
 ```
-
-5. Validate whether openethereum node and rosetta api are working correctly
-
+or within repository you can run `make run-mainnet-online` 
+#### MAINNET:OFFLINE
 ```shell
-docker-compose logs openethereum
-docker-compose logs rosetta
+docker run -d --rm -e "MODE=offline" -e "NETWORK=mainnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 ewc-rosetta:latest
 ```
+or within repository you can run `make run-mainnet-offline`
+#### TESTNET:ONLINE
+```shell
+docker run -d --rm -e "MODE=online" -e "NETWORK=testnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 -p 8545:8545 ewc-rosetta:latest
+```
+or within repository you can run `make run-testnet-online`
+
+#### TESTNET:OFFLINE
+```shell
+docker run -d --rm -e "MODE=offline" -e "NETWORK=testnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 ewc-rosetta:latest
+```
+or within repository you can run `make run-testnet-offline`
