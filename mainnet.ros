@@ -112,7 +112,7 @@ return_funds(3){
     sender_amount = 0 - {{available_amount}};
 
     // Provide a static address as the recipient and construct operations
-    faucet = {"address":"0x160aCA5Db87b19b7104E2Bd2b0495C35336255D7"};
+    faucet = {"address":"0xBBADABa8034E6004B25D16fd479E5E37247814df"};
     transfer.confirmation_depth = "1";
     transfer.operations = [
       {
