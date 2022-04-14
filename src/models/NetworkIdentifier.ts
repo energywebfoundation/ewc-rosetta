@@ -1,7 +1,17 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Errors } from "./Errors";
 
 export class NetworkIdentifier {
-  constructor(public blockchain: string, public network: string) {}
+  @ApiProperty()
+  public blockchain: string; 
+  
+  @ApiProperty()
+  public network: string;
+  
+  constructor(blockchain: string, network: string) {
+    this.blockchain = blockchain;
+    this.network = network;
+  }
 
   static validate(network: NetworkIdentifier) {
     if (!network) {

@@ -4,6 +4,7 @@ import {
   HttpException,
   Post,
   HttpCode,
+  HttpStatus,
 } from "@nestjs/common";
 import { ConstructionDeriveRequest } from "../models/ConstructionDeriveRequest";
 
@@ -21,6 +22,12 @@ import { ConstructionCombineRequest } from "../models/ConstructionCombineRequest
 import { stripZXPrefix, addZXPrefix } from "../utils/hex";
 import { ethers } from "ethers";
 import { DynamicRoute } from "../shared/decorators/dynamic-route.decorator";
+import { ApiResponse } from "@nestjs/swagger";
+import { Error as ErrorResponse } from "../models/Error";
+import { ConstructionHashResponse } from "../models/ConstructionHashResponse";
+import { ConstructionPayloadResponse } from "../models/ConstructionPayloadsResponse";
+import { ConstructionParseResponse } from "../models/ConstructionParseResponse";
+import { ConstructionSubmitResponse } from "../models/ConstructionSubmitResponse";
 
 @Controller("construction")
 export class ConstructionController {
@@ -28,6 +35,20 @@ export class ConstructionController {
 
   @Post("/derive")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    schema: {
+      properties: {
+        address: {
+          type: 'string'
+        }
+      }
+    }
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+  })
   public async derive(@Body() request: ConstructionDeriveRequest) {
     const validationResult = ConstructionDeriveRequest.validate(request);
 
@@ -46,6 +67,14 @@ export class ConstructionController {
 
   @Post("/hash")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: ConstructionHashResponse
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+  })
   public async hash(@Body() request: ConstructionHashRequest) {
     const validationResult = ConstructionHashRequest.validate(request);
 
@@ -62,6 +91,20 @@ export class ConstructionController {
 
   @Post("/preprocess")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    schema: {
+      properties: {
+        options: {
+          properties: {}
+        }
+      }
+    }
+  })
   public async preprocess(@Body() request: ConstructionPreprocessRequest) {
     const validationResult = ConstructionPreprocessRequest.validate(request);
 
@@ -80,7 +123,21 @@ export class ConstructionController {
 
   @DynamicRoute(
     Post("/metadata"),
-    HttpCode(200)
+    HttpCode(200),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      type: ErrorResponse
+    }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      schema: {
+        properties: {
+          metadata: {
+            properties: {}
+          }
+        }
+      }
+    })
   )
   public async metadata(@Body() request: ConstructionMetadataRequest) {
     const validationResult = ConstructionMetadataRequest.validate(request);
@@ -100,6 +157,14 @@ export class ConstructionController {
 
   @Post("/payloads")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: ConstructionPayloadResponse
+  })
   public async payloads(@Body() request: ConstructionPayloadsRequest) {
     const validationResult = ConstructionPayloadsRequest.validate(request);
 
@@ -126,6 +191,14 @@ export class ConstructionController {
 
   @Post("/parse")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: ConstructionParseResponse
+  })
   public async parse(@Body() request: ConstructionParseRequest) {
     const validationResult = ConstructionParseRequest.validate(request);
 
@@ -146,7 +219,15 @@ export class ConstructionController {
 
   @DynamicRoute(
     Post("/submit"),
-    HttpCode(200)
+    HttpCode(200),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      type: ErrorResponse
+    }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      type: ConstructionSubmitResponse
+    })
   )
   public async submit(@Body() request: ConstructionSubmitRequest) {
     const validationResult = ConstructionSubmitRequest.validate(request);
@@ -170,6 +251,20 @@ export class ConstructionController {
 
   @Post("/combine")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    schema: {
+      properties: {
+        signed_transaction: {
+          type: "string"
+        }
+      }
+    }
+  })
   public async combine(@Body() request: ConstructionCombineRequest) {
     const signedTransaction = await this.constructionService.combine(
       request.unsigned_transaction,

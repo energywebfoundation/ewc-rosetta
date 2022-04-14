@@ -1,11 +1,21 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { NetworkIdentifier } from "./NetworkIdentifier";
 import { Operation } from "./Operation";
 
 export class ConstructionPreprocessRequest {
+  @ApiProperty()
+  network_identifier: NetworkIdentifier;
+  
+  @ApiProperty({ type: [Operation] })
+  operations: Operation[];
+  
   constructor(
-    public network_identifier: NetworkIdentifier,
-    public operations: Operation[]
-  ) {}
+    network_identifier: NetworkIdentifier,
+    operations: Operation[]
+  ) {
+    this.network_identifier = network_identifier;
+    this.operations = operations;
+  }
 
   static validate(constructionDeriveRequest: ConstructionPreprocessRequest) {
     const networkValidationResult = NetworkIdentifier.validate(

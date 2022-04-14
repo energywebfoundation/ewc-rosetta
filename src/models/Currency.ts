@@ -1,5 +1,16 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class Currency {
-  constructor(public symbol: string, public decimals: number) {}
+  @ApiProperty()
+  symbol: string;
+  
+  @ApiProperty()
+  decimals: number
+  
+  constructor(symbol: string, decimals: number) {
+    this.symbol = symbol;
+    this.decimals = decimals;
+  }
 
   static get EWT() {
     return new Currency("EWT", 18);

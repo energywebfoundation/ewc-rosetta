@@ -1,16 +1,41 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Account } from "./Account";
 import { Amount } from "./Amount";
 import { OperationIdentifier } from "./OperationIdentifier";
 
 export class Operation {
+  @ApiProperty()
+  operation_identifier: OperationIdentifier;
+  
+  @ApiProperty()
+  type: string;
+  
+  @ApiProperty()
+  status: string;
+  
+  @ApiProperty()
+  account: Account;
+  
+  @ApiProperty()
+  amount?: Amount;
+  
+  @ApiProperty({ type: [OperationIdentifier]})
+  related_operations?: OperationIdentifier[];
   constructor(
-    public operation_identifier: OperationIdentifier,
-    public type: string,
-    public status: string,
-    public account: Account,
-    public amount?: Amount,
-    public related_operations?: OperationIdentifier[]
-  ) {}
+    operation_identifier: OperationIdentifier,
+    type: string,
+    status: string,
+    account: Account,
+    amount?: Amount,
+    related_operations?: OperationIdentifier[]
+  ) {
+    this.operation_identifier = operation_identifier;
+    this.type = type;
+    this.status = status;
+    this.account = account;
+    this.amount = amount;
+    this.related_operations = related_operations;
+  }
 
   static Transfer(
     index: number,

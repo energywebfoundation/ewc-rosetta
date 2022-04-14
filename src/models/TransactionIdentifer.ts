@@ -1,8 +1,13 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { getRPCProvider } from "src/utils/client";
 import { Errors } from "./Errors";
 
 export class TransactionIdentifier {
-  constructor(public hash: string) {}
+  @ApiProperty()
+  hash: string
+  constructor(hash: string) {
+    this.hash = hash;
+  }
 
   static async validate(transactionIdentifier: TransactionIdentifier) {
     if (transactionIdentifier?.hash) {

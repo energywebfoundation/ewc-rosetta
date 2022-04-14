@@ -4,8 +4,12 @@ import {
   Post,
   HttpException,
   HttpCode,
+  HttpStatus,
 } from "@nestjs/common";
-import { MempoolRequest } from "../models/MempoolRequest";
+import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import { Error as ErrorResponse } from "../models/Error";
+import { MempoolResponse, MempoolTransactionResponse } from "../models/MempoolResponse";
+import { MainMempoolRequest, MempoolRequest } from "../models/MempoolRequest";
 import { MempoolService } from "./mempool.service";
 
 @Controller("mempool")
@@ -14,6 +18,15 @@ export class MempoolController {
 
   @Post()
   @HttpCode(200)
+  @ApiBody({ type: MainMempoolRequest })
+  @ApiResponse({
+     status: HttpStatus.INTERNAL_SERVER_ERROR,
+     type: ErrorResponse
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: MempoolResponse
+  })
   public async getAllTransactions(@Body() body: MempoolRequest) {
     const validationResult = await MempoolRequest.validate(body);
 
@@ -26,6 +39,14 @@ export class MempoolController {
 
   @Post("transaction")
   @HttpCode(200)
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse
+ })
+ @ApiResponse({
+   status: HttpStatus.OK,
+   type: MempoolTransactionResponse
+ })
   public async getTransaction(@Body() body: MempoolRequest) {
     const validationResult = await MempoolRequest.validate(body);
 

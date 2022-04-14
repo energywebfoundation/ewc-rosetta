@@ -1,13 +1,27 @@
 import { NetworkIdentifier } from "./NetworkIdentifier";
 import { Errors } from "./Errors";
 import { ethers } from "ethers";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ConstructionParseRequest {
+  @ApiProperty()
+  network_identifier: NetworkIdentifier;
+  
+  @ApiProperty()
+  signed: boolean;
+
+  @ApiProperty()
+  transaction: string;
+  
   constructor(
-    public network_identifier: NetworkIdentifier,
-    public signed: boolean,
-    public transaction: string
-  ) {}
+    network_identifier: NetworkIdentifier,
+    signed: boolean,
+    transaction: string
+  ) {
+    this.network_identifier = network_identifier;
+    this.signed = signed;
+    this.transaction = transaction;
+  }
 
   static validate(constructionParseRequest: ConstructionParseRequest) {
     const networkValidationResult = NetworkIdentifier.validate(
