@@ -1,13 +1,27 @@
 import { NetworkIdentifier } from "./NetworkIdentifier";
 import { AccountIdentifier } from "./AccountIdentifier";
 import { PartialBlockIdentifier } from "./PartialBlockIdentifier";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class AccountRequest {
+  @ApiProperty()
+  public network_identifier: NetworkIdentifier;
+  
+  @ApiProperty()
+  public account_identifier: AccountIdentifier;
+  
+  @ApiProperty()
+  public block_identifier: PartialBlockIdentifier;
+  
   constructor(
-    public network_identifier: NetworkIdentifier,
-    public account_identifier: AccountIdentifier,
-    public block_identifier: PartialBlockIdentifier
-  ) {}
+    network_identifier: NetworkIdentifier,
+    account_identifier: AccountIdentifier,
+    block_identifier: PartialBlockIdentifier
+  ) {
+    this.account_identifier = account_identifier;
+    this.network_identifier = network_identifier;
+    this.block_identifier = block_identifier;
+  }
 
   static async validate(request: AccountRequest) {
     const networkValidationResult = NetworkIdentifier.validate(

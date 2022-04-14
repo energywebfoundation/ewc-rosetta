@@ -1,3 +1,9 @@
+import { ApiProperty } from "@nestjs/swagger"
+
 export class OperationIdentifier {
-  constructor(public index: number) {}
+  @ApiProperty()
+  index: number
+  constructor(index: number) {
+    this.index = index
+  }
 }

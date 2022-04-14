@@ -1,12 +1,22 @@
 import { NetworkIdentifier } from "./NetworkIdentifier";
 import { ethers } from "ethers";
 import { Errors } from "./Errors";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ConstructionMetadataRequest {
+  @ApiProperty()
+  network_identifier: NetworkIdentifier;
+  
+  @ApiProperty()
+  options: any;
+  
   constructor(
-    public network_identifier: NetworkIdentifier,
-    public options: any
-  ) {}
+    network_identifier: NetworkIdentifier,
+    options: any
+  ) {
+    this.network_identifier = network_identifier;
+    this.options = options
+  }
 
   static validate(constructionMetadataRequest: ConstructionMetadataRequest) {
     const networkValidationResult = NetworkIdentifier.validate(

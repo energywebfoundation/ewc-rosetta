@@ -1,3 +1,9 @@
+import { ApiProperty } from "@nestjs/swagger"
+
 export class Account {
-  constructor(public address: string) {}
+  @ApiProperty()
+  address: string
+  constructor(address: string) {
+    this.address = address
+  }
 }

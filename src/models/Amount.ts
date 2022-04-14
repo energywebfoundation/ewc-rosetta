@@ -1,5 +1,15 @@
-import { Currency } from "./Currency";
+import { ApiProperty } from '@nestjs/swagger'
+import { Currency } from './Currency'
 
 export class Amount {
-  constructor(public value: string, public currency: Currency) {}
+  @ApiProperty()
+  value: string;
+
+  @ApiProperty()
+  currency: Currency;
+
+  constructor(value: string, currency: Currency) {
+    this.currency = currency;
+    this.value = value;
+  }
 }

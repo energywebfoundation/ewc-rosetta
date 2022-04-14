@@ -1,9 +1,19 @@
 import { getRPCProvider } from "src/utils/client";
 import { Errors } from "./Errors";
 import { BlockIdentifier } from "./BlockIdentifier";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class PartialBlockIdentifier {
-  constructor(public index?: number, public hash?: string) {}
+  @ApiProperty()
+  index?: number;
+
+  @ApiProperty()
+  hash?: string;
+  
+  constructor(index?: number, hash?: string) {
+    this.index = index;
+    this.hash = hash;
+  }
 
   static async validate(blockIdentifier: PartialBlockIdentifier) {
     if (blockIdentifier?.hash && blockIdentifier?.index) {

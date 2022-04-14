@@ -1,4 +1,9 @@
+import { ApiProperty } from "@nestjs/swagger"
+
 export class OperationStatus {
-  "status": string
-  "successful": boolean
+  @ApiProperty()
+  status: string
+  
+  @ApiProperty()
+  successful: boolean
 }
