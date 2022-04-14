@@ -126,7 +126,7 @@ export class BlockService {
 
             let transfers = [];
 
-            if (data != '0x') {
+            if (data != '0x' && success) {
                 try {
                     const trace = await withRetry(() => this.provider.send('trace_transaction', [tx.transactionHash]));
                     transfers = this.traceToTransfers(trace, operationFactory);
