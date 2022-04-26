@@ -10,7 +10,7 @@ import { getRPCProvider } from '../utils/client'
 import { RewardService } from './reward.service'
 import { withRetry } from '../utils/withRetry'
 import { Operation } from '../models/Operation'
-import { CallType, EthTrace } from './block.types'
+import { CallType, EthTrace, TransferCallType } from './block.types'
 
 @Injectable()
 export class BlockService {
@@ -183,33 +183,40 @@ export class BlockService {
     for (const trace of traces) {
       const zeroValue = trace.action.value == '0x0'
       const isCallType = CallType.has(trace.type.toUpperCase())
-
+      
+      const isOperationValid =
+        isCallType && Boolean(trace.action.callType) && !zeroValue
+          ? TransferCallType.has(trace.action.callType?.toUpperCase())
+          : true
+          
       const shouldAddOperation = !(zeroValue && isCallType)
 
-      if (shouldAddOperation) {
+      if (shouldAddOperation && isOperationValid) {
         let from: string
         let to: string
         let value: string
 
+        const isTransferSuccessful = Boolean(trace.error) ? false : success
+
         if (trace.type === 'create') {
-          from = trace.action.from;
-          to = trace.result.address;
-          value = trace.action.value;
+          from = trace.action.from
+          to = trace.result.address
+          value = trace.action.value
         } else if (trace.type == 'suicide') {
-          from = trace.action.address;
-          to = trace.action.refundAddress;
-          value = trace.action.balance;
+          from = trace.action.address
+          to = trace.action.refundAddress
+          value = trace.action.balance
         } else {
-          from = trace.action.from;
-          to = trace.action.to;
-          value = trace.action.value;
+          from = trace.action.from
+          to = trace.action.to
+          value = trace.action.value
         }
 
         const newOperations = operationFactory.transferEWT(
           utils.getAddress(from),
           utils.getAddress(to),
           BigNumber.from(value),
-          success
+          isTransferSuccessful
         )
 
         operations.push(...newOperations)
