@@ -29,6 +29,31 @@ export interface EthTrace {
   transactionPosition: 0,
   type: string
 }
+export interface BlockWithTransactions {
+  author: string;
+  baseFeePerGas: string;
+  difficulty: string;
+  extraData: string;
+  gasLimit: string;
+  gasUsed: string;
+  hash: string;
+  logsBloom: string;
+  miner: string;
+  number: string;
+  parentHash: string;
+  receiptsRoot: string;
+  sealFields: string[];
+  sha3Uncles: string;
+  signature: string;
+  size: string;
+  stateRoot: string;
+  step: string;
+  timestamp: string;
+  totalDifficulty: string;
+  transactions: string[];
+  transactionsRoot: string;
+  uncles: any[];
+}
 
 export const CALL = 'CALL';
 export const CALLCODE = 'CALLCODE';
