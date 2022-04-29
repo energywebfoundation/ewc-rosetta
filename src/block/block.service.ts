@@ -10,32 +10,42 @@ import { getRPCProvider } from '../utils/client'
 import { RewardService } from './reward.service'
 import { withRetry } from '../utils/withRetry'
 import { Operation } from '../models/Operation'
-import { CallType, EthTrace, TransferCallType } from './block.types'
+import {
+  BlockWithTransactions,
+  CallType,
+  EthTrace,
+  TransferCallType,
+} from './block.types'
 
 @Injectable()
 export class BlockService {
   private provider = getRPCProvider()
   private readonly logger = new Logger(BlockService.name)
 
-  constructor(private rewardService: RewardService) {}
+  constructor(private rewardService: RewardService) { }
 
   public async getBlock(block?: number) {
-    const {
-      transactions,
-      miner,
-      timestamp,
-      parentHash,
-      hash,
-      number: blockNumber,
-    } = await withRetry(() =>
-      this.provider.getBlockWithTransactions(block ?? 'latest')
-    )
+    const [
+      { transactions, miner, timestamp, parentHash, hash, number: blockNumber },
+      { baseFeePerGas },
+    ] = await Promise.all([
+      withRetry(() =>
+        this.provider.getBlockWithTransactions(block ?? 'latest')
+      ),
+      withRetry<BlockWithTransactions>(() =>
+        this.provider.send('eth_getBlockByNumber', [
+          block !== null ? `0x${block.toString(16)}` : 'latest',
+          false,
+        ])
+      ),
+    ])
 
     const parent = await withRetry(() => this.provider.getBlock(parentHash))
 
     const blockTransaction = await this.buildBlockTransactions(
       miner,
-      transactions
+      transactions,
+      BigNumber.from(baseFeePerGas || 0)
     )
 
     const rewardTransaction = await this.getRewardTransaction(
@@ -69,11 +79,19 @@ export class BlockService {
         throw new Error('Blocknumber mismatch')
       }
 
-      const block = await withRetry(() => this.provider.getBlock(blockNumber))
+      const { miner, baseFeePerGas } = await withRetry<BlockWithTransactions>(
+        () =>
+          this.provider.send('eth_getBlockByNumber', [
+            blockNumber !== null ? `0x${blockNumber.toString(16)}` : 'latest',
+            false
+          ])
+      )
 
-      const blockTransaction = await this.buildBlockTransactions(block.miner, [
-        transaction,
-      ])
+      const blockTransaction = await this.buildBlockTransactions(
+        miner,
+        [transaction],
+        BigNumber.from(baseFeePerGas || 0)
+      )
 
       return {
         transaction: blockTransaction,
@@ -113,7 +131,8 @@ export class BlockService {
 
   private async buildBlockTransactions(
     miner: string,
-    transactions: providers.TransactionResponse[]
+    transactions: providers.TransactionResponse[],
+    baseFeePerGas: BigNumber
   ) {
     const receipts = await Promise.all(
       transactions.map((tx) =>
@@ -133,7 +152,9 @@ export class BlockService {
           tx.transactionHash
         )
         const { gasUsed, status, from, to, contractAddress } = tx
-        const feeValue = gasPrice.mul(gasUsed)
+        const feeValue = BigNumber.from(gasPrice).mul(gasUsed)
+        const feeBurned = gasUsed.mul(baseFeePerGas)
+        const feeReward = feeValue.sub(feeBurned)
         const success = status === 1
 
         let transfers = []
@@ -146,8 +167,7 @@ export class BlockService {
             transfers = this.traceToTransfers(traces, operationFactory, success)
           } catch (e) {
             this.logger.error(
-              `Parsing trace output for tx ${
-                tx.transactionHash
+              `Parsing trace output for tx ${tx.transactionHash
               } failed with error ${e.toString()}`
             )
           }
@@ -160,7 +180,11 @@ export class BlockService {
           )
         }
 
-        const fee = operationFactory.fee(from, miner, feeValue)
+        const fee = operationFactory.fee({ from, miner, value: feeReward })
+
+        if (!feeBurned.isZero()) {
+          fee.push(...operationFactory.fee({ from, value: feeBurned }))
+        }
 
         return new Transaction(new TransactionIdentifier(tx.transactionHash), [
           ...transfers,
@@ -183,12 +207,12 @@ export class BlockService {
     for (const trace of traces) {
       const zeroValue = trace.action.value == '0x0'
       const isCallType = CallType.has(trace.type.toUpperCase())
-      
+
       const isOperationValid =
         isCallType && Boolean(trace.action.callType) && !zeroValue
           ? TransferCallType.has(trace.action.callType?.toUpperCase())
           : true
-          
+
       const shouldAddOperation = !(zeroValue && isCallType)
 
       if (shouldAddOperation && isOperationValid) {
