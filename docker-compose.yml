@@ -1,0 +1,14 @@
+---
+version: '3.7'
+services:
+  rosetta:
+    restart: unless-stopped
+    image: ewc-rosetta:latest
+    container_name: rosetta
+    restart: always
+    volumes:
+      - /data/openethereum-data/chain-data:/root/.local/share/openethereum/
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
