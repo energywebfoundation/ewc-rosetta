@@ -148,35 +148,26 @@ export class BlockService {
     return Promise.all(
       receipts.map(async (tx) => {
         const operationFactory = new OperationFactory()
-        const { value, gasPrice, data } = transactionCache.get(
+        const { gasPrice } = transactionCache.get(
           tx.transactionHash
         )
-        const { gasUsed, status, from, to, contractAddress } = tx
+        const { gasUsed, status, from } = tx
         const feeValue = BigNumber.from(gasPrice).mul(gasUsed)
         const feeBurned = gasUsed.mul(baseFeePerGas)
         const feeReward = feeValue.sub(feeBurned)
         const success = status === 1
 
-        let transfers = []
+        let transfers: Operation[] = []
 
-        if (data != '0x') {
-          try {
-            const traces = await withRetry<EthTrace[]>(() =>
-              this.provider.send('trace_transaction', [tx.transactionHash])
-            )
-            transfers = this.traceToTransfers(traces, operationFactory, success)
-          } catch (e) {
-            this.logger.error(
-              `Parsing trace output for tx ${tx.transactionHash
-              } failed with error ${e.toString()}`
-            )
-          }
-        } else {
-          transfers = operationFactory.transferEWT(
-            from,
-            to ?? contractAddress,
-            value,
-            success
+        try {
+          const traces = await withRetry<EthTrace[]>(() =>
+            this.provider.send('trace_transaction', [tx.transactionHash])
+          )
+          transfers = this.traceToTransfers(traces, operationFactory, success)
+        } catch (e) {
+          this.logger.error(
+            `Parsing trace output for tx ${tx.transactionHash
+            } failed with error ${e.toString()}`
           )
         }
 
