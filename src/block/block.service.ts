@@ -27,7 +27,7 @@ export class BlockService {
   public async getBlock(block?: number) {
     const [
       { transactions, miner, timestamp, parentHash, hash, number: blockNumber },
-      { baseFeePerGas }
+      { baseFeePerGas },
     ] = await Promise.all([
       withRetry(() =>
         this.provider.getBlockWithTransactions(block ?? 'latest')
@@ -35,9 +35,9 @@ export class BlockService {
       withRetry<BlockWithTransactions>(() =>
         this.provider.send('eth_getBlockByNumber', [
           block !== null ? `0x${block.toString(16)}` : 'latest',
-          true,
+          false,
         ])
-      )
+      ),
     ])
 
     const parent = await withRetry(() => this.provider.getBlock(parentHash))
@@ -170,7 +170,6 @@ export class BlockService {
             } failed with error ${e.toString()}`
           )
         }
-
 
         const fee = operationFactory.fee({ from, miner, value: feeReward })
 
