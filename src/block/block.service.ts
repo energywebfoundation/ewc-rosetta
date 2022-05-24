@@ -27,7 +27,7 @@ export class BlockService {
   public async getBlock(block?: number) {
     const [
       { transactions, miner, timestamp, parentHash, hash, number: blockNumber },
-      { baseFeePerGas },
+      { baseFeePerGas }
     ] = await Promise.all([
       withRetry(() =>
         this.provider.getBlockWithTransactions(block ?? 'latest')
@@ -35,9 +35,9 @@ export class BlockService {
       withRetry<BlockWithTransactions>(() =>
         this.provider.send('eth_getBlockByNumber', [
           block !== null ? `0x${block.toString(16)}` : 'latest',
-          false,
+          true,
         ])
-      ),
+      )
     ])
 
     const parent = await withRetry(() => this.provider.getBlock(parentHash))
@@ -148,37 +148,29 @@ export class BlockService {
     return Promise.all(
       receipts.map(async (tx) => {
         const operationFactory = new OperationFactory()
-        const { value, gasPrice, data } = transactionCache.get(
+        const { gasPrice } = transactionCache.get(
           tx.transactionHash
         )
-        const { gasUsed, status, from, to, contractAddress } = tx
+        const { gasUsed, status, from } = tx
         const feeValue = BigNumber.from(gasPrice).mul(gasUsed)
         const feeBurned = gasUsed.mul(baseFeePerGas)
         const feeReward = feeValue.sub(feeBurned)
         const success = status === 1
 
-        let transfers = []
+        let transfers: Operation[] = []
 
-        if (data != '0x') {
-          try {
-            const traces = await withRetry<EthTrace[]>(() =>
-              this.provider.send('trace_transaction', [tx.transactionHash])
-            )
-            transfers = this.traceToTransfers(traces, operationFactory, success)
-          } catch (e) {
-            this.logger.error(
-              `Parsing trace output for tx ${tx.transactionHash
-              } failed with error ${e.toString()}`
-            )
-          }
-        } else {
-          transfers = operationFactory.transferEWT(
-            from,
-            to ?? contractAddress,
-            value,
-            success
+        try {
+          const traces = await withRetry<EthTrace[]>(() =>
+            this.provider.send('trace_transaction', [tx.transactionHash])
+          )
+          transfers = this.traceToTransfers(traces, operationFactory, success)
+        } catch (e) {
+          this.logger.error(
+            `Parsing trace output for tx ${tx.transactionHash
+            } failed with error ${e.toString()}`
           )
         }
+
 
         const fee = operationFactory.fee({ from, miner, value: feeReward })
 
