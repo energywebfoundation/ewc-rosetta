@@ -213,6 +213,10 @@ export class BlockService {
 
         const isTransferSuccessful = Boolean(trace.error) ? false : success
 
+        if (!isCallType && !isTransferSuccessful && zeroValue) {
+          continue;
+        }
+
         if (trace.type === 'create') {
           from = trace.action.from
           to = trace.result.address
