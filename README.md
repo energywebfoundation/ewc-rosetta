@@ -56,12 +56,12 @@ docker run -d --rm -e "MODE=offline" -e "NETWORK=mainnet" -e "WEB3_PROVIDER_URL=
 or within repository you can run `make run-mainnet-offline`
 #### TESTNET:ONLINE
 ```shell
-docker run -d --rm -e "MODE=online" -e "NETWORK=volta" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 -p 8545:8545 ewc-rosetta:latest
+docker run -d --rm -e "MODE=online" -e "NETWORK=testnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 -p 8545:8545 ewc-rosetta:latest
 ```
-or within repository you can run `make run-volta-online`
+or within repository you can run `make run-testnet-online`
 
 #### TESTNET:OFFLINE
 ```shell
-docker run -d --rm -e "MODE=offline" -e "NETWORK=volta" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 ewc-rosetta:latest
+docker run -d --rm -e "MODE=offline" -e "NETWORK=testnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 ewc-rosetta:latest
 ```
-or within repository you can run `make run-volta-offline`
+or within repository you can run `make run-testnet-offline`
