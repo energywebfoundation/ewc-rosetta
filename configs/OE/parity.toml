@@ -1,5 +1,6 @@
 [parity]
 no_persistent_txqueue = true
+base_path = "/data"
 
 [rpc]
 disable = false
