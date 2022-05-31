@@ -7,7 +7,7 @@ services:
     container_name: rosetta
     restart: always
     volumes:
-      - /data/openethereum-data/chain-data:/root/.local/share/openethereum/
+      - /data/openethereum-data/chain-data:/data
     env_file:
       - .env
     ports:
