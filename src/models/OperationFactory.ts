@@ -14,25 +14,28 @@ export class OperationFactory {
 
   public transferEWT(
     from: string,
-    to: string,
+    to: string | null,
     value: BigNumber,
     success?: boolean
   ) {
-    return [
+    const ops = [
       Operation.Transfer(
         this.operationIndex++,
         from,
         new Amount(value.mul(-1).toString(), Currency.EWT),
         success
-      ),
-      Operation.Transfer(
+      )
+    ]
+    if (to) {
+      ops.push(Operation.Transfer(
         this.operationIndex++,
         to,
         new Amount(value.toString(), Currency.EWT),
         success,
         [new OperationIdentifier(this.operationIndex - 2)]
-      ),
-    ]
+      ))
+    }
+    return ops;
   }
 
   public fee({ from, miner, value }: { from: string, miner?: string, value: BigNumber }) {
