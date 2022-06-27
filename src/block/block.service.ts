@@ -208,7 +208,7 @@ export class BlockService {
 
       if (shouldAddOperation && isOperationValid) {
         let from: string
-        let to: string
+        let to: string | null
         let value: string
 
         const isTransferSuccessful = Boolean(trace.error) ? false : success
@@ -223,7 +223,7 @@ export class BlockService {
           value = trace.action.value
         } else if (trace.type == 'suicide') {
           from = trace.action.address
-          to = trace.action.refundAddress
+          to = trace.action.address === trace.action.refundAddress ? null : trace.action.refundAddress
           value = trace.action.balance
         } else {
           from = trace.action.from
@@ -233,7 +233,7 @@ export class BlockService {
 
         const newOperations = operationFactory.transferEWT(
           utils.getAddress(from),
-          utils.getAddress(to),
+          to && utils.getAddress(to),
           BigNumber.from(value),
           isTransferSuccessful
         )
