@@ -39,7 +39,7 @@ Success: {"create_account":10,"transfer":6}
 
 ```
 
-```
+```shell
 rosetta-cli check:data --configuration-file mainnet.json
 ```
 
@@ -100,8 +100,10 @@ Success: Index End Condition [Index: 18100000]
 ```
 ## TESTNET
 
-### Volta check construction
+```shell
+rosetta-cli check:construction --configuration-file volta.json
 ```
+
 fund return complete!
 
 Success: {"create_account":10,"transfer":6}
@@ -123,4 +125,60 @@ Success: {"create_account":10,"transfer":6}
 |                          | exceeded broadcast limit       |       |
 +--------------------------+--------------------------------+-------+
 +------------------------------+-------+
+
+```shell
+rosetta-cli check:data --configuration-file volta.json
 ```
+
+Success: Index End Condition [Index: 18000000]
+
++--------------------+--------------------------------+--------+
+|  CHECK:DATA TESTS  |          DESCRIPTION           | STATUS |
++--------------------+--------------------------------+--------+
+| Request/Response   | Rosetta implementation         | PASSED |
+|                    | serviced all requests          |        |
++--------------------+--------------------------------+--------+
+| Response Assertion | All responses are correctly    | PASSED |
+|                    | formatted                      |        |
++--------------------+--------------------------------+--------+
+| Block Syncing      | Blocks are connected into a    | PASSED |
+|                    | single canonical chain         |        |
++--------------------+--------------------------------+--------+
+| Balance Tracking   | Account balances did not go    | PASSED |
+|                    | negative                       |        |
++--------------------+--------------------------------+--------+
+| Reconciliation     | No balance discrepancies were  | PASSED |
+|                    | found between computed and     |        |
+|                    | live balances                  |        |
++--------------------+--------------------------------+--------+
+
++--------------------------+--------------------------------+------------+
+|     CHECK:DATA STATS     |          DESCRIPTION           |   VALUE    |
++--------------------------+--------------------------------+------------+
+| Blocks                   | # of blocks synced             |   18000001 |
++--------------------------+--------------------------------+------------+
+| Orphans                  | # of blocks orphaned           |          0 |
++--------------------------+--------------------------------+------------+
+| Transactions             | # of transaction processed     |  177987422 |
++--------------------------+--------------------------------+------------+
+| Operations               | # of operations processed      |  424534742 |
++--------------------------+--------------------------------+------------+
+| Accounts                 | # of accounts seen             |    2277000 |
++--------------------------+--------------------------------+------------+
+| Active Reconciliations   | # of reconciliations performed |   90801392 |
+|                          | after seeing an account in a   |            |
+|                          | block                          |            |
++--------------------------+--------------------------------+------------+
+| Inactive Reconciliations | # of reconciliations performed |   86427315 |
+|                          | on randomly selected accounts  |            |
++--------------------------+--------------------------------+------------+
+| Exempt Reconciliations   | # of reconciliation failures   |          0 |
+|                          | considered exempt              |            |
++--------------------------+--------------------------------+------------+
+| Failed Reconciliations   | # of reconciliation failures   |          0 |
++--------------------------+--------------------------------+------------+
+| Skipped Reconciliations  | # of reconciliations skipped   |   41715964 |
++--------------------------+--------------------------------+------------+
+| Reconciliation Coverage  | % of accounts that have been   | 99.900834% |
+|                          | reconciled                     |            |
++--------------------------+--------------------------------+------------+
