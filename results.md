@@ -105,7 +105,7 @@ rosetta-cli check:construction --configuration-file volta.json
 ```
 
 fund return complete!
-
+```
 Success: {"create_account":10,"transfer":6}
 
 +--------------------------+--------------------------------+-------+
@@ -125,11 +125,11 @@ Success: {"create_account":10,"transfer":6}
 |                          | exceeded broadcast limit       |       |
 +--------------------------+--------------------------------+-------+
 +------------------------------+-------+
-
+```
 ```shell
 rosetta-cli check:data --configuration-file volta.json
 ```
-
+```
 Success: Index End Condition [Index: 18000000]
 
 +--------------------+--------------------------------+--------+
@@ -182,3 +182,4 @@ Success: Index End Condition [Index: 18000000]
 | Reconciliation Coverage  | % of accounts that have been   | 99.900834% |
 |                          | reconciled                     |            |
 +--------------------------+--------------------------------+------------+
+```
