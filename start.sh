@@ -33,4 +33,4 @@ openethereum --config /parity/config/parity.toml --chain /parity/config/$chain -
 wait_for_node &
 process_id=$!
 wait -n $process_id
-node /bin/ewc-rosetta/dist/main.js
+forever --minUptime 5000 --spinSleepTime 3000 /bin/ewc-rosetta/dist/main.js
