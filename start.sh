@@ -1,7 +1,7 @@
 #!/bin/bash
 
 wait_for_node() {
-  ETH_SYNCING=$(curl -X POST --data '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}' $WEB3_PROVIDER_URL -H 'Content-Type: application/json')
+  ETH_SYNCING=$(curl -s -X POST --data '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}' $WEB3_PROVIDER_URL -H 'Content-Type: application/json')
   RESULT=$(echo "$ETH_SYNCING" | jq -r .result)
 
   if [ "$RESULT" == "false" ]; then
@@ -29,7 +29,7 @@ else
     chain="Volta.json"
 fi
 
-openethereum --config /parity/config/parity.toml --chain /parity/config/$chain --mode $mode &
+openethereum --config /parity/config/parity.toml --chain /parity/config/$chain --mode $mode --logging="${LOG_LEVEL:-info}" &
 wait_for_node &
 process_id=$!
 wait -n $process_id

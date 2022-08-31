@@ -45,6 +45,8 @@ RUN mkdir /bin/ewc-rosetta
 COPY --from=builder ewc-rosetta/dist bin/ewc-rosetta/dist
 COPY --from=builder ewc-rosetta/node_modules bin/ewc-rosetta/node_modules
 
+RUN npm i -g forever
+
 COPY --from=builder ewc-rosetta/start.sh /
 RUN chmod +x /start.sh
 

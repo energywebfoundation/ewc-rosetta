@@ -27,7 +27,6 @@
     "@nestjs/swagger": "^4.5.12",
     "dotenv": "8.2.0",
     "ethers": "5.0.8",
-    "forever": "^4.0.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.4",

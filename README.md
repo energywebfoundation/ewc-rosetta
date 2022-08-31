@@ -65,3 +65,17 @@ or within repository you can run `make run-volta-online`
 docker run -d --rm -e "MODE=offline" -e "NETWORK=volta" -e "WEB3_PROVIDER_URL=http://localhost:8545" -p 8080:8080 ewc-rosetta:latest
 ```
 or within repository you can run `make run-volta-offline`
+
+#### LOGGING LEVEL
+Configuration accepts `LOG_LEVEL` env variable (by default it is set to `info`).
+Possible options: `error`, `warn`, `info`, `debug` or `trace` or you can specify this by module like `rpc=debug, sync=trace` available modules `rpc`, `sync`, `discovery`, `network`, `tokio_reactor`, `engine`, `trace`, `finality`
+#### Simple Example 
+```shell
+docker run -d --rm -e "MODE=online" -e "NETWORK=mainnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -e "LOG_LEVEL=debug" -p 8080:8080 -p 8545:8545 ewc-rosetta:latest
+```
+This would run container with Mainnet Online configuration with logging in the most verbose option - `debug`.
+
+#### Advanced Example
+```shell
+docker run -d --rm -e "MODE=online" -e "NETWORK=mainnet" -e "WEB3_PROVIDER_URL=http://localhost:8545" -e "LOG_LEVEL=rpc=debug, sync=trace" -p 8080:8080 -p 8545:8545 ewc-rosetta:latest
+```
